@@ -47,10 +47,15 @@ namespace net
 				_storage.markNumberAsNotPrime(0);
 				_storage.markNumberAsNotPrime(1);
 				long long currentprime = 2L;
-				while (currentprime < _maxSize)
+				bool abort = false;
+				while (!abort && (currentprime < _maxSize))
 				{
 					markMultiplePrimes(currentprime);
 					currentprime = _storage.findNextPrime(currentprime);
+					if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) 
+					{
+						abort = true;
+					}
 				}
 			}
 

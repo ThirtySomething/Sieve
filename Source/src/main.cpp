@@ -22,7 +22,7 @@
 #include <iostream>
 
 #define FILENAME "primes.txt"
-#define LIMIT 100000
+#define LIMIT 10000000
 
 int main()
 {
