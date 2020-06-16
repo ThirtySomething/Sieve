@@ -1,94 +1,145 @@
+//******************************************************************************
+// Copyright 2020 ThirtySomething
+//******************************************************************************
+// This file is part of Sieve.
+//
+// Sieve is free software: you can redistribute it and/or modify it under the
+// terms of the GNU Lesser General Public License as published by the Free
+// Software Foundation, either version 3 of the License, or (at your option)
+// any later version.
+//
+// Sieve is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+// FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for
+// more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with Sieve. If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************
+
 #include "CDataStorage.h"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
 #include <iterator>
 
-const long long CDataStorage::_bitsize = 64;
-
-CDataStorage::CDataStorage(void) 
+// *****************************************************************************
+// Namespace of Sieve
+// *****************************************************************************
+namespace net
 {
-	clear();
-}
+    // *****************************************************************************
+    // Namespace of Sieve
+    // *****************************************************************************
+    namespace derpaul
+    {
+        // *****************************************************************************
+        // Namespace of Sieve
+        // *****************************************************************************
+        namespace sieve
+        {
+            // *****************************************************************************
+            // Constants
+            // *****************************************************************************
+            const long long CDataStorage::_bitsize = 64L;
 
-bool CDataStorage::isNumberMarked(long long position)
-{
-	lldiv_t internalPosition = getStoragePosition(position);
-	long long element = _storage[internalPosition.quot];
-	bool result = (element >> internalPosition.rem) & 1ULL;
-	return result;
-}
+            // *****************************************************************************
+            // *****************************************************************************
+            CDataStorage::CDataStorage(void)
+            {
+                clear();
+            }
 
-void CDataStorage::numberMark(long long position)
-{
-	lldiv_t internalPosition = getStoragePosition(position);
-	long long element = _storage[internalPosition.quot];
-	element |= 1ULL << internalPosition.rem;
-	_storage[internalPosition.quot] = element;
-}
+            // *****************************************************************************
+            // *****************************************************************************
+            bool CDataStorage::isNumberPrime(long long number)
+            {
+                lldiv_t internalPosition = getStoragePosition(number);
+                long long element = _storage[internalPosition.quot];
+                bool result = (element >> internalPosition.rem) & 1LL;
+                return result;
+            }
 
-void CDataStorage::numberUnmark(long long position)
-{
-	lldiv_t internalPosition = getStoragePosition(position);
-	long long element = _storage[internalPosition.quot];
-	element &= ~(1ULL << internalPosition.rem);
-	_storage[internalPosition.quot] = element;
-}
+            // *****************************************************************************
+            // *****************************************************************************
+            void CDataStorage::markNumberAsNotPrime(long long number)
+            {
+                lldiv_t internalPosition = getStoragePosition(number);
+                long long element = _storage[internalPosition.quot];
+                element |= 1LL << internalPosition.rem;
+                _storage[internalPosition.quot] = element;
+            }
 
-long long CDataStorage::findNextUnmarked(long long position)
-{
-	long long startValue = position + 1;
-	while (isNumberMarked(startValue))
-	{
-		startValue++;
-	}
-	return startValue;
-}
+            // *****************************************************************************
+            // *****************************************************************************
+            long long CDataStorage::findNextPrime(long long number)
+            {
+                long long startValue = number + 1;
+                while (isNumberPrime(startValue))
+                {
+                    startValue++;
+                }
+                return startValue;
+            }
 
-void CDataStorage::clear(void)
-{
-	_storage.clear();
-}
+            // *****************************************************************************
+            // *****************************************************************************
+            void CDataStorage::clear(void)
+            {
+                _storage.clear();
+            }
 
-void CDataStorage::dataLoad(std::string filename)
-{
-	std::ifstream infile(filename);
-	_storage.clear();
-	long long index, bits;
-	while (infile >> index >> bits)
-	{
-		_storage[index] = bits;
-	}
-	infile.close();
-}
+            // *****************************************************************************
+            // *****************************************************************************
+            void CDataStorage::dataLoad(std::string filename)
+            {
+                std::ifstream infile(filename);
+                _storage.clear();
+                long long index, bits;
+                while (infile >> index >> bits)
+                {
+                    _storage[index] = bits;
+                }
+                infile.close();
+            }
 
-void CDataStorage::dataSave(std::string filename)
-{
-	std::ofstream myfile;
-	myfile.open(filename);
+            // *****************************************************************************
+            // *****************************************************************************
+            void CDataStorage::dataSave(std::string filename)
+            {
+                std::ofstream myfile;
+                myfile.open(filename);
 
-	for (std::pair<long long, long long> element : _storage) {
-		myfile << element.first << " " << element.second << std::endl;
-	}
+                for (std::pair<long long, long long> element : _storage)
+                {
+                    myfile << element.first << " " << element.second << std::endl;
+                }
 
-	myfile.close();
-}
+                myfile.close();
+            }
 
-void CDataStorage::showUnmarked(long long maximum)
-{
-	long long maxValue = maximum;
+            // *****************************************************************************
+            // *****************************************************************************
+            void CDataStorage::showPrimes(long long number)
+            {
+                long long maxValue = number;
 
-	for (long long current = 2L; current < maxValue; current++)
-	{
-		if (!isNumberMarked(current))
-		{
-			std::cout << "Current prime: " << current << std::endl;
-		}
-	}
-}
+                for (long long current = 2L; current < maxValue; current++)
+                {
+                    if (!isNumberPrime(current))
+                    {
+                        std::cout << "Current prime: " << current << std::endl;
+                    }
+                }
+            }
 
-lldiv_t CDataStorage::getStoragePosition(long long position)
-{
-	lldiv_t result = lldiv(position, CDataStorage::_bitsize);
-	return result;
+            // *****************************************************************************
+            // *****************************************************************************
+            lldiv_t CDataStorage::getStoragePosition(long long number)
+            {
+                lldiv_t result = lldiv(number, CDataStorage::_bitsize);
+                return result;
+            }
+        }
+    }
 }
