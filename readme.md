@@ -13,7 +13,7 @@ This is a program to perform the [Sieve of Eratosthenes][soe].
 ## Todo
 
 - ~~Check code for fails using CPP Check.~~
-- Add feature to abort process and save current state.
+- Add feature to ~~abort process~~ and save current state.
 - Add feature to resume aborted process.
 
 [soe]: https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes

@@ -21,6 +21,7 @@
 
 #include "CDataStorage.h"
 #include <string>
+#include <future>
 
 // *****************************************************************************
 // Namespace of Sieve
@@ -50,6 +51,11 @@ namespace net
                 explicit CSieve(long long maxsize);
 
                 /// <summary>
+                /// Destructor
+                /// </summary>
+                ~CSieve();
+
+                /// <summary>
                 /// Performs the sieve algorithm
                 /// </summary>
                 void sievePrimes();
@@ -76,12 +82,32 @@ namespace net
                 /// <summary>
                 /// Internal data storage of sieve
                 /// </summary>
-                CDataStorage _storage;
+                CDataStorage m_storage;
 
                 /// <summary>
                 /// Upper border of sieve
                 /// </summary>
-                long long _maxSize;
+                long long m_maxSize;
+
+                /// <summary>
+                /// Memorize current prime for saving purposes
+                /// </summary>
+                long long m_currentPrime;
+
+                /// <summary>
+                /// Flag to abort thread for checking of ESC key pressed
+                /// </summary>
+                bool m_abort_thread;
+
+                /// <summary>
+                /// Flag to abort sieve of primes
+                /// </summary>
+                bool m_stop_work;
+
+                /// <summary>
+                /// Thread for checking of ESC hit
+                /// </summary>
+                std::future<void> m_thread_future;
 
                 /// <summary>
                 /// Mark multiple value of given prime up to max size of sieve

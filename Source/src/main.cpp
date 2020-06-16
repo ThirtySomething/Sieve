@@ -32,6 +32,6 @@ int main()
     mySieve.sievePrimes();
     auto end = std::chrono::steady_clock::now();
     std::cout << "Time for calculation: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
-    mySieve.showPrimes(LIMIT);
-    mySieve.dataSave(FILENAME);
+    //mySieve.showPrimes(LIMIT);
+    //mySieve.dataSave(FILENAME);
 }

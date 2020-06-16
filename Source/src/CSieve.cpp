@@ -20,6 +20,7 @@
 #include "CSieve.h"
 #include <iostream>
 #include <windows.h>
+#include <thread>
 
 // *****************************************************************************
 // *****************************************************************************
@@ -35,27 +36,49 @@ namespace net
 		{
 			// *****************************************************************************
 			// *****************************************************************************
-			CSieve::CSieve(long long maxsize) : _maxSize(maxsize)
+			CSieve::CSieve(long long maxsize) :
+				m_maxSize(maxsize),
+				m_currentPrime(0LL),
+				m_abort_thread(false),
+				m_stop_work(false)
 			{
+				m_thread_future = std::async(std::launch::async, [&]() {
+					while (!m_abort_thread)
+					{
+						auto keystate = ::GetAsyncKeyState(VK_ESCAPE);
+						if (keystate & ((short)1 << (sizeof(short) * 8 - 1)))
+						{
+							std::cout << "ESC hit, wait until abort" << std::endl;
+							m_stop_work = true;
+							break;
+						}
+
+						std::this_thread::sleep_for(std::chrono::milliseconds(50));
+					}
+				});
+			}
+
+			// *****************************************************************************
+			// *****************************************************************************
+			CSieve::~CSieve()
+			{
+				m_abort_thread = true;
+				m_thread_future.wait();
 			}
 
 			// *****************************************************************************
 			// *****************************************************************************
 			void CSieve::sievePrimes(void)
 			{
-				_storage.clear();
-				_storage.markNumberAsNotPrime(0);
-				_storage.markNumberAsNotPrime(1);
-				long long currentprime = 2L;
-				bool abort = false;
-				while (!abort && (currentprime < _maxSize))
+				m_storage.clear();
+				m_storage.markNumberAsNotPrime(0LL);
+				m_storage.markNumberAsNotPrime(1LL);
+				m_currentPrime = 2LL;
+
+				while (!m_stop_work && (m_currentPrime < m_maxSize))
 				{
-					markMultiplePrimes(currentprime);
-					currentprime = _storage.findNextPrime(currentprime);
-					if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) 
-					{
-						abort = true;
-					}
+					markMultiplePrimes(m_currentPrime);
+					m_currentPrime = m_storage.findNextPrime(m_currentPrime);
 				}
 			}
 
@@ -63,30 +86,30 @@ namespace net
 			// *****************************************************************************
 			void CSieve::dataLoad(std::string filename)
 			{
-				_storage.dataLoad(filename);
+				m_storage.dataLoad(filename);
 			}
 
 			// *****************************************************************************
 			// *****************************************************************************
 			void CSieve::dataSave(std::string filename)
 			{
-				_storage.dataSave(filename);
+				m_storage.dataSave(filename);
 			}
 
 			// *****************************************************************************
 			// *****************************************************************************
 			void CSieve::showPrimes(long long maxsize)
 			{
-				_storage.showPrimes(maxsize);
+				m_storage.showPrimes(maxsize);
 			}
 
 			// *****************************************************************************
 			// *****************************************************************************
 			void CSieve::markMultiplePrimes(long long prime)
 			{
-				for (long long current = prime * 2; current < _maxSize; current += prime)
+				for (long long current = prime * 2; current < m_maxSize; current += prime)
 				{
-					_storage.markNumberAsNotPrime(current);
+					m_storage.markNumberAsNotPrime(current);
 				}
 			}
 		}
