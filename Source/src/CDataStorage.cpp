@@ -128,7 +128,7 @@ namespace net
                 {
                     if (!isNumberPrime(current))
                     {
-                        std::cout << "Current prime: " << current << std::endl;
+                        std::cout << "Prime: " << current << std::endl;
                     }
                 }
             }

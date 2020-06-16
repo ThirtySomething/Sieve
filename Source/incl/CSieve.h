@@ -46,13 +46,13 @@ namespace net
                 /// <summary>
                 /// Constructor
                 /// </summary>
-                CSieve(void);
+                /// <param name="maxsize">Maximum prime to sieve to</param>
+                CSieve(long long maxsize);
 
                 /// <summary>
                 /// Performs the sieve algorithm
                 /// </summary>
-                /// <param name="maxsize">Maximum prime to sieve to</param>
-                void action(long long maxsize);
+                void sievePrimes();
 
                 /// <summary>
                 /// Load sieve data from file
@@ -79,11 +79,15 @@ namespace net
                 CDataStorage _storage;
 
                 /// <summary>
+                /// Upper border of sieve
+                /// </summary>
+                long long _maxSize;
+
+                /// <summary>
                 /// Mark multiple value of given prime up to max size of sieve
                 /// </summary>
                 /// <param name="prime">Prime to mark multiple values</param>
-                /// <param name="maxsize">Maximum number of sieve</param>
-                void markMultiplePrimes(long long prime, long long maxsize);
+                void markMultiplePrimes(long long prime);
             };
         }
     }

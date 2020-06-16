@@ -1,6 +1,6 @@
 # Sieve
 
-This is a program to calculate perform the [Sieve of Eratosthenes][soe].
+This is a program to perform the [Sieve of Eratosthenes][soe].
 
 ## Details
 
