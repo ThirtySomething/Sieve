@@ -47,7 +47,7 @@ namespace net
                 /// Constructor
                 /// </summary>
                 /// <param name="maxsize">Maximum prime to sieve to</param>
-                CSieve(long long maxsize);
+                explicit CSieve(long long maxsize);
 
                 /// <summary>
                 /// Performs the sieve algorithm

@@ -39,3 +39,4 @@
 /doxygen/html
 /.vscode
 /*.user
+/Sieve-cppcheck-build-dir
