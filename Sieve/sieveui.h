@@ -17,21 +17,35 @@
 // along with Sieve. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
 
-#include "CSieve.h"
-#include <chrono>
-#include <iostream>
+#ifndef SIEVEUI_H
+#define SIEVEUI_H
 
-#define FILENAME "primes.txt"
-#define LIMIT 10000000
+#include <QMainWindow>
+#include "csieve.h"
 
-int main()
+QT_BEGIN_NAMESPACE
+namespace Ui { class SieveUI; }
+QT_END_NAMESPACE
+
+class SieveUI : public QMainWindow
 {
-    net::derpaul::sieve::CSieve mySieve(LIMIT);
+    Q_OBJECT
 
-    auto start = std::chrono::steady_clock::now();
-    mySieve.sievePrimes();
-    auto end = std::chrono::steady_clock::now();
-    std::cout << "Time for calculation: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms" << std::endl;
-    //mySieve.showPrimes(LIMIT);
-    //mySieve.dataSave(FILENAME);
-}
+public:
+    SieveUI(QWidget *parent = nullptr);
+    ~SieveUI();
+
+private slots:
+    void on_actionQuit_triggered();
+
+    void on_actionLoad_triggered();
+
+    void on_actionSave_triggered();
+
+    void on_actionAbout_Sieve_triggered();
+
+private:
+    Ui::SieveUI *ui;  
+    net::derpaul::sieve::CSieve *m_sieve;
+};
+#endif // SIEVEUI_H

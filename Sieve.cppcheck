@@ -2,13 +2,17 @@
 <project version="1">
     <builddir>Sieve-cppcheck-build-dir</builddir>
     <platform>win64</platform>
-    <importproject>Sieve.sln</importproject>
-    <analyze-all-vs-configs>true</analyze-all-vs-configs>
+    <analyze-all-vs-configs>false</analyze-all-vs-configs>
     <check-headers>true</check-headers>
     <check-unused-templates>false</check-unused-templates>
     <max-ctu-depth>10</max-ctu-depth>
-    <vs-configurations>
-        <config>Debug</config>
-        <config>Release</config>
-    </vs-configurations>
+    <includedir>
+        <dir name="Sieve/"/>
+    </includedir>
+    <paths>
+        <dir name="Sieve"/>
+    </paths>
+    <libraries>
+        <library>qt</library>
+    </libraries>
 </project>

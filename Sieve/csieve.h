@@ -19,9 +19,9 @@
 
 #pragma once
 
-#include <map>
-#include <stdlib.h>
+#include "cdatastorage.h"
 #include <string>
+#include <future>
 
 // *****************************************************************************
 // Namespace of Sieve
@@ -39,76 +39,81 @@ namespace net
         namespace sieve
         {
             /// <summary>
-            /// Data container for holding the prime data
+            /// Contains logic of sieve
             /// </summary>
-            class CDataStorage
+            class CSieve
             {
             public:
                 /// <summary>
                 /// Constructor
                 /// </summary>
-                CDataStorage(void);
+                /// <param name="maxsize">Maximum prime to sieve to</param>
+                explicit CSieve(long long maxsize);
 
                 /// <summary>
-                /// Check if given number is NOT a prime
+                /// Destructor
                 /// </summary>
-                /// <param name="number">Number to check as prime</param>
-                /// <returns>true if prime, otherwise false</returns>
-                bool isNumberPrime(long long number);
+                ~CSieve();
 
                 /// <summary>
-                /// Mark number as NOT prime
+                /// Performs the sieve algorithm
                 /// </summary>
-                /// <param name="number">Number to mark</param>
-                void markNumberAsNotPrime(long long number);
+                void sievePrimes();
 
                 /// <summary>
-                /// Search for next prime
+                /// Load sieve data from file
                 /// </summary>
-                /// <param name="number">Number to number for search of next prime</param>
-                /// <returns>Next prime</returns>
-                long long findNextPrime(long long number);
-
-                /// <summary>
-                /// Clear internal memory
-                /// </summary>
-                void clear(void);
-
-                /// <summary>
-                /// Load prime data from file
-                /// </summary>
-                /// <param name="filename">Filename containing prime data</param>
+                /// <param name="filename">Filename of sieve data</param>
                 void dataLoad(std::string filename);
 
                 /// <summary>
-                /// Save prime data to file
+                /// Write sieve data to file
                 /// </summary>
-                /// <param name="filename">Filename to save data to</param>
+                /// <param name="filename">Filename of sieve data</param>
                 void dataSave(std::string filename);
 
                 /// <summary>
-                /// Show all found primes up to given border
+                /// Show all primes up to given limit
                 /// </summary>
-                /// <param name="number">Upper border</param>
-                void showPrimes(long long number);
+                /// <param name="maxsize">Upper border</param>
+                void showPrimes(long long maxsize);
 
             private:
                 /// <summary>
-                /// Internal static variable to memorize numbers of bits
+                /// Internal data storage of sieve
                 /// </summary>
-                static const long long _bitsize;
+                CDataStorage m_storage;
 
                 /// <summary>
-                /// Internal storage for primes
+                /// Upper border of sieve
                 /// </summary>
-                std::map<long long, long long> _storage;
+                long long m_maxSize;
 
                 /// <summary>
-                /// Internal method to map large number to index and position
+                /// Memorize current prime for saving purposes
                 /// </summary>
-                /// <param name="number">Number to map</param>
-                /// <returns>Structure with quote and remainder</returns>
-                lldiv_t getStoragePosition(long long number);
+                long long m_currentPrime;
+
+                /// <summary>
+                /// Flag to abort thread for checking of ESC key pressed
+                /// </summary>
+                bool m_abort_thread;
+
+                /// <summary>
+                /// Flag to abort sieve of primes
+                /// </summary>
+                bool m_stop_work;
+
+                /// <summary>
+                /// Thread for checking of ESC hit
+                /// </summary>
+                std::future<void> m_thread_future;
+
+                /// <summary>
+                /// Mark multiple value of given prime up to max size of sieve
+                /// </summary>
+                /// <param name="prime">Prime to mark multiple values</param>
+                void markMultiplePrimes(long long prime);
             };
         }
     }

@@ -40,3 +40,5 @@
 /.vscode
 /*.user
 /Sieve-cppcheck-build-dir
+/Sieve/Sieve.pro.user
+/build-Sieve-*

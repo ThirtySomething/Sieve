@@ -17,7 +17,7 @@
 // along with Sieve. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
 
-#include "CSieve.h"
+#include "csieve.h"
 #include <iostream>
 #include <windows.h>
 #include <thread>
@@ -86,14 +86,14 @@ namespace net
 			// *****************************************************************************
 			void CSieve::dataLoad(std::string filename)
 			{
-				m_storage.dataLoad(filename);
+				m_currentPrime = m_storage.dataLoad(filename);
 			}
 
 			// *****************************************************************************
 			// *****************************************************************************
 			void CSieve::dataSave(std::string filename)
 			{
-				m_storage.dataSave(filename);
+				m_storage.dataSave(filename, m_currentPrime);
 			}
 
 			// *****************************************************************************

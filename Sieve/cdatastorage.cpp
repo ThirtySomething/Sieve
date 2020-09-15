@@ -17,7 +17,7 @@
 // along with Sieve. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
 
-#include "CDataStorage.h"
+#include "cdatastorage.h"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -91,25 +91,29 @@ namespace net
 
             // *****************************************************************************
             // *****************************************************************************
-            void CDataStorage::dataLoad(std::string filename)
+            long long CDataStorage::dataLoad(std::string filename)
             {
                 std::ifstream infile(filename);
                 _storage.clear();
-                long long index, bits;
+                long long index, bits, currentPrime;
+                infile >> currentPrime;
                 while (infile >> index >> bits)
                 {
                     _storage[index] = bits;
                 }
                 infile.close();
+
+                return currentPrime;
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            void CDataStorage::dataSave(std::string filename)
+            void CDataStorage::dataSave(std::string filename, long long currentPrime)
             {
                 std::ofstream myfile;
                 myfile.open(filename);
 
+                myfile << currentPrime << std::endl;
                 for (std::pair<long long, long long> element : _storage)
                 {
                     myfile << element.first << " " << element.second << std::endl;
