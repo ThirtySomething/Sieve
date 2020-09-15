@@ -41,7 +41,7 @@ namespace net
             // *****************************************************************************
             // Constants
             // *****************************************************************************
-            const long long CDataStorage::_bitsize = 64L;
+            const long long CDataStorage::m_bitsize = 64L;
 
             // *****************************************************************************
             // *****************************************************************************
@@ -52,10 +52,10 @@ namespace net
 
             // *****************************************************************************
             // *****************************************************************************
-            bool CDataStorage::isNumberPrime(long long number)
+            bool CDataStorage::isNumberNotPrime(long long number)
             {
                 lldiv_t internalPosition = getStoragePosition(number);
-                long long element = _storage[internalPosition.quot];
+                long long element = m_storage[internalPosition.quot];
                 bool result = (element >> internalPosition.rem) & 1LL;
                 return result;
             }
@@ -65,9 +65,9 @@ namespace net
             void CDataStorage::markNumberAsNotPrime(long long number)
             {
                 lldiv_t internalPosition = getStoragePosition(number);
-                long long element = _storage[internalPosition.quot];
+                long long element = m_storage[internalPosition.quot];
                 element |= 1LL << internalPosition.rem;
-                _storage[internalPosition.quot] = element;
+                m_storage[internalPosition.quot] = element;
             }
 
             // *****************************************************************************
@@ -75,7 +75,7 @@ namespace net
             long long CDataStorage::findNextPrime(long long number)
             {
                 long long startValue = number + 1;
-                while (isNumberPrime(startValue))
+                while (isNumberNotPrime(startValue))
                 {
                     startValue++;
                 }
@@ -86,37 +86,39 @@ namespace net
             // *****************************************************************************
             void CDataStorage::clear(void)
             {
-                _storage.clear();
+                m_storage.clear();
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            long long CDataStorage::dataLoad(std::string filename)
+            std::tuple<long long, long long> CDataStorage::dataLoad(std::string filename)
             {
                 std::ifstream infile(filename);
-                _storage.clear();
-                long long index, bits, currentPrime;
+                m_storage.clear();
+                long long index, bits, currentPrime, maxSize;
                 infile >> currentPrime;
+                infile >> maxSize;
                 while (infile >> index >> bits)
                 {
-                    _storage[index] = bits;
+                    m_storage[index] = bits;
                 }
                 infile.close();
 
-                return currentPrime;
+                return {currentPrime, maxSize};
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            void CDataStorage::dataSave(std::string filename, long long currentPrime)
+            void CDataStorage::dataSave(std::string filename, long long currentPrime, long long maxSize)
             {
                 std::ofstream myfile;
                 myfile.open(filename);
 
                 myfile << currentPrime << std::endl;
-                for (std::pair<long long, long long> element : _storage)
+                myfile << maxSize << std::endl;
+                for (auto [idx, storagePart] : m_storage)
                 {
-                    myfile << element.first << " " << element.second << std::endl;
+                    myfile << idx << " " << storagePart << std::endl;
                 }
 
                 myfile.close();
@@ -130,7 +132,7 @@ namespace net
 
                 for (long long current = 2L; current < maxValue; current++)
                 {
-                    if (!isNumberPrime(current))
+                    if (!isNumberNotPrime(current))
                     {
                         std::cout << "Prime: " << current << std::endl;
                     }
@@ -141,7 +143,7 @@ namespace net
             // *****************************************************************************
             lldiv_t CDataStorage::getStoragePosition(long long number)
             {
-                lldiv_t result = lldiv(number, CDataStorage::_bitsize);
+                lldiv_t result = lldiv(number, CDataStorage::m_bitsize);
                 return result;
             }
         }

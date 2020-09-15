@@ -25,15 +25,16 @@
 SieveUI::SieveUI(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::SieveUI)
-    , m_sieve(new net::derpaul::sieve::CSieve(0LL))
+    , m_processSieve()
 {
     ui->setupUi(this);
+    QObject::connect(this, &SieveUI::primeChanged, this, &SieveUI::setPrime);
+    ui->leSieveMaxSize->setText(QString::number(10000000LL));
 }
 
 SieveUI::~SieveUI()
 {
     delete ui;
-    delete m_sieve;
 }
 
 
@@ -73,3 +74,51 @@ void SieveUI::on_actionAbout_Sieve_triggered()
     msgBox.setText("<a href='https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes'>Sieve of Eratosthenes</a><br>(C) 2020 by <a href='https://github.com/ThirtySomething/Sieve'>ThirtySomething</a>");
     msgBox.exec();
 }
+
+void SieveUI::on_btnStart_clicked()
+{
+    if (m_processSieve.valid())
+    {
+        return;
+    }
+
+    m_processSieve = std::async(std::launch::async, [&]() {
+        m_sieve->sievePrimes([&](long long currentPrime) {
+            emit primeChanged(currentPrime);
+        }
+        );
+    });
+}
+
+void SieveUI::setPrime(long long prime)
+{
+    ui->lblPrimeNumber->setText(QString::number(prime));
+}
+
+void SieveUI::on_btnStop_clicked()
+{
+    m_sieve->interruptSieving();
+    if (m_processSieve.valid())
+    {
+        m_processSieve.wait();
+        m_processSieve = std::future<void>();
+    }
+}
+
+void SieveUI::on_btnReset_clicked()
+{
+    on_btnStop_clicked();
+    setPrimeMaxSize();
+}
+
+void SieveUI::on_leSieveMaxSize_textChanged(const QString &arg1)
+{
+    setPrimeMaxSize();
+}
+
+void SieveUI::setPrimeMaxSize(void)
+{
+    QString primeMaxSize = ui->leSieveMaxSize->text();
+    m_sieve = std::make_unique<net::derpaul::sieve::CSieve>(primeMaxSize.toLongLong());
+}
+

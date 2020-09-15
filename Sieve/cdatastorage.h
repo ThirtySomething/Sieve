@@ -17,7 +17,8 @@
 // along with Sieve. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
 
-#pragma once
+#ifndef CDATASTORAGE_H
+#define CDATASTORAGE_H
 
 #include <map>
 #include <stdlib.h>
@@ -54,7 +55,7 @@ namespace net
                 /// </summary>
                 /// <param name="number">Number to check as prime</param>
                 /// <returns>true if prime, otherwise false</returns>
-                bool isNumberPrime(long long number);
+                bool isNumberNotPrime(long long number);
 
                 /// <summary>
                 /// Mark number as NOT prime
@@ -79,14 +80,15 @@ namespace net
                 /// </summary>
                 /// <param name="filename">Filename containing prime data</param>
                 /// <returns>Prime where to restart</returns>
-                long long dataLoad(std::string filename);
+                std::tuple<long long, long long> dataLoad(std::string filename);
 
                 /// <summary>
                 /// Save prime data to file
                 /// </summary>
                 /// <param name="filename">Filename to save data to</param>
                 /// <param name="currentPrime">Current prime working on</param>
-                void dataSave(std::string filename, long long currentPrime);
+                /// <param name="maxSize">Upper border of sieve</param>
+                void dataSave(std::string filename, long long currentPrime, long long maxSize);
 
                 /// <summary>
                 /// Show all found primes up to given border
@@ -98,12 +100,12 @@ namespace net
                 /// <summary>
                 /// Internal static variable to memorize numbers of bits
                 /// </summary>
-                static const long long _bitsize;
+                static const long long m_bitsize;
 
                 /// <summary>
                 /// Internal storage for primes
                 /// </summary>
-                std::map<long long, long long> _storage;
+                std::map<long long, long long> m_storage;
 
                 /// <summary>
                 /// Internal method to map large number to index and position
@@ -115,3 +117,5 @@ namespace net
         }
     }
 }
+
+#endif

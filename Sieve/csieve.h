@@ -17,7 +17,8 @@
 // along with Sieve. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
 
-#pragma once
+#ifndef CSIEVE_H
+#define CSIEVE_H
 
 #include "cdatastorage.h"
 #include <string>
@@ -53,12 +54,13 @@ namespace net
                 /// <summary>
                 /// Destructor
                 /// </summary>
-                ~CSieve();
+                ~CSieve(void);
 
                 /// <summary>
                 /// Performs the sieve algorithm
+                /// <param name="updatePrime">Function called after new prime determined</param>
                 /// </summary>
-                void sievePrimes();
+                void sievePrimes(std::function<void(long long)> updatePrime);
 
                 /// <summary>
                 /// Load sieve data from file
@@ -78,6 +80,11 @@ namespace net
                 /// <param name="maxsize">Upper border</param>
                 void showPrimes(long long maxsize);
 
+                /// <summary>
+                /// Set internal flag to interrupt sieve process.
+                /// </summary>
+                void interruptSieving(void);
+
             private:
                 /// <summary>
                 /// Internal data storage of sieve
@@ -95,26 +102,23 @@ namespace net
                 long long m_currentPrime;
 
                 /// <summary>
-                /// Flag to abort thread for checking of ESC key pressed
-                /// </summary>
-                bool m_abort_thread;
-
-                /// <summary>
                 /// Flag to abort sieve of primes
                 /// </summary>
                 bool m_stop_work;
 
                 /// <summary>
-                /// Thread for checking of ESC hit
+                /// Mark all multiples of given prime up to max size of sieve
                 /// </summary>
-                std::future<void> m_thread_future;
+                /// <param name="prime">Prime to mark multiples</param>
+                void markPrimeMultiples(long long prime);
 
                 /// <summary>
-                /// Mark multiple value of given prime up to max size of sieve
+                /// Prepare storage for usage in sieve
                 /// </summary>
-                /// <param name="prime">Prime to mark multiple values</param>
-                void markMultiplePrimes(long long prime);
+                void initStorage(void);
             };
         }
     }
 }
+
+#endif

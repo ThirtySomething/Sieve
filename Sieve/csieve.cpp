@@ -38,47 +38,29 @@ namespace net
 			// *****************************************************************************
 			CSieve::CSieve(long long maxsize) :
 				m_maxSize(maxsize),
-				m_currentPrime(0LL),
-				m_abort_thread(false),
+                m_currentPrime(1LL),
 				m_stop_work(false)
 			{
-				m_thread_future = std::async(std::launch::async, [&]() {
-					while (!m_abort_thread)
-					{
-						auto keystate = ::GetAsyncKeyState(VK_ESCAPE);
-						if (keystate & ((short)1 << (sizeof(short) * 8 - 1)))
-						{
-							std::cout << "ESC hit, wait until abort" << std::endl;
-							m_stop_work = true;
-							break;
-						}
+                initStorage();
+            }
 
-						std::this_thread::sleep_for(std::chrono::milliseconds(50));
-					}
-				});
+			// *****************************************************************************
+			// *****************************************************************************
+            CSieve::~CSieve(void)
+			{
 			}
 
 			// *****************************************************************************
 			// *****************************************************************************
-			CSieve::~CSieve()
+            void CSieve::sievePrimes(std::function<void(long long)> updatePrime)
 			{
-				m_abort_thread = true;
-				m_thread_future.wait();
-			}
-
-			// *****************************************************************************
-			// *****************************************************************************
-			void CSieve::sievePrimes(void)
-			{
-				m_storage.clear();
-				m_storage.markNumberAsNotPrime(0LL);
-				m_storage.markNumberAsNotPrime(1LL);
-				m_currentPrime = 2LL;
+                m_stop_work = false;
 
 				while (!m_stop_work && (m_currentPrime < m_maxSize))
 				{
-					markMultiplePrimes(m_currentPrime);
-					m_currentPrime = m_storage.findNextPrime(m_currentPrime);
+                    m_currentPrime = m_storage.findNextPrime(m_currentPrime);
+                    updatePrime(m_currentPrime);
+                    markPrimeMultiples(m_currentPrime);
 				}
 			}
 
@@ -86,14 +68,16 @@ namespace net
 			// *****************************************************************************
 			void CSieve::dataLoad(std::string filename)
 			{
-				m_currentPrime = m_storage.dataLoad(filename);
+                auto[currentPrime, maxSize] = m_storage.dataLoad(filename);
+                m_currentPrime = currentPrime;
+                m_maxSize = maxSize;
 			}
 
 			// *****************************************************************************
 			// *****************************************************************************
 			void CSieve::dataSave(std::string filename)
 			{
-				m_storage.dataSave(filename, m_currentPrime);
+                m_storage.dataSave(filename, m_currentPrime, m_maxSize);
 			}
 
 			// *****************************************************************************
@@ -105,13 +89,29 @@ namespace net
 
 			// *****************************************************************************
 			// *****************************************************************************
-			void CSieve::markMultiplePrimes(long long prime)
+            void CSieve::markPrimeMultiples(long long prime)
 			{
 				for (long long current = prime * 2; current < m_maxSize; current += prime)
 				{
 					m_storage.markNumberAsNotPrime(current);
 				}
 			}
+
+            // *****************************************************************************
+            // *****************************************************************************
+            void CSieve::interruptSieving(void)
+            {
+                m_stop_work = true;
+            }
+
+            // *****************************************************************************
+            // *****************************************************************************
+            void CSieve::initStorage(void)
+            {
+                m_storage.clear();
+                m_storage.markNumberAsNotPrime(0LL);
+                m_storage.markNumberAsNotPrime(1LL);
+            }
 		}
 	}
 }

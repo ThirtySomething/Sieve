@@ -22,6 +22,7 @@
 
 #include <QMainWindow>
 #include "csieve.h"
+#include <future>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class SieveUI; }
@@ -35,6 +36,14 @@ public:
     SieveUI(QWidget *parent = nullptr);
     ~SieveUI();
 
+    void resetSieve();
+
+public slots:
+    void setPrime(long long prime);
+
+signals:
+    void primeChanged(long long newPrime);
+
 private slots:
     void on_actionQuit_triggered();
 
@@ -44,8 +53,18 @@ private slots:
 
     void on_actionAbout_Sieve_triggered();
 
+    void on_btnStart_clicked();
+
+    void on_btnStop_clicked();
+
+    void on_btnReset_clicked();
+
+    void on_leSieveMaxSize_textChanged(const QString &arg1);
+
 private:
     Ui::SieveUI *ui;  
-    net::derpaul::sieve::CSieve *m_sieve;
+    std::unique_ptr<net::derpaul::sieve::CSieve> m_sieve;
+    std::future<void> m_processSieve;
+    void setPrimeMaxSize(void);
 };
 #endif // SIEVEUI_H
