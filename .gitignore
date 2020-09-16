@@ -42,3 +42,5 @@
 /Sieve-cppcheck-build-dir
 /Sieve/Sieve.pro.user
 /build-Sieve-*
+/Source/Sieve.vcxproj.user
+/Source/Sieve.vcxproj.filters
