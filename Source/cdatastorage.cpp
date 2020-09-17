@@ -28,124 +28,126 @@
 // *****************************************************************************
 namespace net
 {
-	// *****************************************************************************
-	// Namespace of Sieve
-	// *****************************************************************************
-	namespace derpaul
-	{
-		// *****************************************************************************
-		// Namespace of Sieve
-		// *****************************************************************************
-		namespace sieve
-		{
-			// *****************************************************************************
-			// Constants
-			// *****************************************************************************
-			const long long CDataStorage::m_bitsize = 64L;
+    // *****************************************************************************
+    // Namespace of Sieve
+    // *****************************************************************************
+    namespace derpaul
+    {
+        // *****************************************************************************
+        // Namespace of Sieve
+        // *****************************************************************************
+        namespace sieve
+        {
+            // *****************************************************************************
+            // Constants
+            // *****************************************************************************
+            const long long CDataStorage::m_bitsize = 64L;
 
-			// *****************************************************************************
-			// *****************************************************************************
-			CDataStorage::CDataStorage(void)
-			{
-				clear();
-			}
+            // *****************************************************************************
+            // *****************************************************************************
+            CDataStorage::CDataStorage(void)
+            {
+                clear();
+            }
 
-			// *****************************************************************************
-			// *****************************************************************************
-			bool CDataStorage::isNumberNotPrime(long long number)
-			{
-				lldiv_t internalPosition = getStoragePosition(number);
-				long long element = m_storage[internalPosition.quot];
-				bool result = (element >> internalPosition.rem) & 1LL;
-				return result;
-			}
+            // *****************************************************************************
+            // *****************************************************************************
+            void CDataStorage::clear(void)
+            {
+                m_storage.clear();
+            }
 
-			// *****************************************************************************
-			// *****************************************************************************
-			void CDataStorage::markNumberAsNotPrime(long long number)
-			{
-				lldiv_t internalPosition = getStoragePosition(number);
-				long long element = m_storage[internalPosition.quot];
-				element |= 1LL << internalPosition.rem;
-				m_storage[internalPosition.quot] = element;
-			}
+            // *****************************************************************************
+            // *****************************************************************************
+            std::tuple<long long, long long> CDataStorage::dataLoad(std::string filename)
+            {
+                std::ifstream infile(filename);
+                m_storage.clear();
+                long long index, bits, currentPrime, maxSize;
+                infile >> currentPrime;
+                infile >> maxSize;
+                while (infile >> index >> bits)
+                {
+                    m_storage[index] = bits;
+                }
+                infile.close();
 
-			// *****************************************************************************
-			// *****************************************************************************
-			long long CDataStorage::findNextPrime(long long number)
-			{
-				long long startValue = number + 1;
-				while (isNumberNotPrime(startValue))
-				{
-					startValue++;
-				}
-				return startValue;
-			}
+                return {currentPrime, maxSize};
+            }
 
-			// *****************************************************************************
-			// *****************************************************************************
-			void CDataStorage::clear(void)
-			{
-				m_storage.clear();
-			}
+            // *****************************************************************************
+            // *****************************************************************************
+            void CDataStorage::dataSave(std::string filename, long long currentPrime, long long maxSize)
+            {
+                std::ofstream myfile;
+                myfile.open(filename);
 
-			// *****************************************************************************
-			// *****************************************************************************
-			std::tuple<long long, long long> CDataStorage::dataLoad(std::string filename)
-			{
-				std::ifstream infile(filename);
-				m_storage.clear();
-				long long index, bits, currentPrime, maxSize;
-				infile >> currentPrime;
-				infile >> maxSize;
-				while (infile >> index >> bits)
-				{
-					m_storage[index] = bits;
-				}
-				infile.close();
+                myfile << currentPrime << std::endl;
+                myfile << maxSize << std::endl;
+                for (auto [idx, storagePart] : m_storage)
+                {
+                    myfile << idx << " " << storagePart << std::endl;
+                }
 
-				return { currentPrime, maxSize };
-			}
+                myfile.close();
+            }
 
-			// *****************************************************************************
-			// *****************************************************************************
-			void CDataStorage::dataSave(std::string filename, long long currentPrime, long long maxSize)
-			{
-				std::ofstream myfile;
-				myfile.open(filename);
+            // *****************************************************************************
+            // *****************************************************************************
+            void CDataStorage::exportPrimes(std::string filename, long long latestPrime)
+            {
+                std::ofstream myfile;
+                myfile.open(filename);
 
-				myfile << currentPrime << std::endl;
-				myfile << maxSize << std::endl;
-				for (auto [idx, storagePart] : m_storage)
-				{
-					myfile << idx << " " << storagePart << std::endl;
-				}
+                for (long long current = 2L; current < latestPrime; current++)
+                {
+                    if (!isNumberNotPrime(current))
+                    {
+                        myfile << current << std::endl;
+                    }
+                }
+                myfile.close();
+            }
 
-				myfile.close();
-			}
+            // *****************************************************************************
+            // *****************************************************************************
+            long long CDataStorage::findNextPrime(long long number)
+            {
+                long long startValue = number + 1;
+                while (isNumberNotPrime(startValue))
+                {
+                    startValue++;
+                }
+                return startValue;
+            }
 
-			// *****************************************************************************
-			// *****************************************************************************
-			void CDataStorage::showPrimes(long long number)
-			{
-				long long maxValue = number;
+            // *****************************************************************************
+            // *****************************************************************************
+            bool CDataStorage::isNumberNotPrime(long long number)
+            {
+                lldiv_t internalPosition = getStoragePosition(number);
+                long long element = m_storage[internalPosition.quot];
+                bool result = (element >> internalPosition.rem) & 1LL;
+                return result;
+            }
 
-				for (long long current = 2L; current < maxValue; current++)
-				{
-					if (!isNumberNotPrime(current))
-					{
-						std::cout << "Prime: " << current << std::endl;
-					}
-				}
-			}
+            // *****************************************************************************
+            // *****************************************************************************
+            void CDataStorage::markNumberAsNotPrime(long long number)
+            {
+                lldiv_t internalPosition = getStoragePosition(number);
+                long long element = m_storage[internalPosition.quot];
+                element |= 1LL << internalPosition.rem;
+                m_storage[internalPosition.quot] = element;
+            }
 
-			// *****************************************************************************
-			// *****************************************************************************
-			lldiv_t CDataStorage::getStoragePosition(long long number)
-			{
-				lldiv_t result = lldiv(number, CDataStorage::m_bitsize);
-				return result;
-			}
-		}
-	}
-}
+            // *****************************************************************************
+            // *****************************************************************************
+            lldiv_t CDataStorage::getStoragePosition(long long number)
+            {
+                lldiv_t result = lldiv(number, CDataStorage::m_bitsize);
+                return result;
+            }
+        } // namespace sieve
+    }     // namespace derpaul
+} // namespace net

@@ -25,41 +25,99 @@
 #include <future>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class SieveUI; }
+namespace Ui
+{
+    class SieveUI;
+}
 QT_END_NAMESPACE
 
+/// <summary>
+/// Class for UI of sieve
+/// </summary>
 class SieveUI : public QMainWindow
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	SieveUI(QWidget* parent = nullptr);
-	~SieveUI();
+    /// <summary>
+    /// Default QT constructor
+    /// </summary>
+    /// <param name="parent">No parent window given</param>
+    SieveUI(QWidget *parent = nullptr);
 
-public slots:
-	void setPrime(long long prime);
+    /// <summary>
+    /// Default destructor
+    /// </summary>
+    ~SieveUI(void);
 
 signals:
-	void primeChanged(long long newPrime);
+    /// <summary>
+    /// Signal is triggered when sieve found new prime
+    /// </summary>
+    /// <param name="newPrime">New prime</param>
+    void primeChanged(long long newPrime);
 
 private slots:
-	void on_actionQuit_triggered();
+    /// <summary>
+    /// Displays about box
+    /// </summary>
+    void on_actionAbout_Sieve_triggered(void);
 
-	void on_actionLoad_triggered();
+    /// <summary>
+    /// Export dialog to export primes
+    /// </summary>
+    void on_actionExport_triggered(void);
 
-	void on_actionSave_triggered();
-	
-	void on_actionNew_triggered();
+    /// <summary>
+    /// Load dialog to load sieve
+    /// </summary>
+    void on_actionLoad_triggered(void);
 
-	void on_actionAbout_Sieve_triggered();
+    /// <summary>
+    /// New dialog to create new sieve
+    /// </summary>
+    void on_actionNew_triggered(void);
 
-	void on_btnStart_clicked();
+    /// <summary>
+    /// To exit the application
+    /// </summary>
+    void on_actionQuit_triggered(void);
 
-	void on_btnStop_clicked();
+    /// <summary>
+    /// Save dialog to save sieve
+    /// </summary>
+    void on_actionSave_triggered(void);
+
+    /// <summary>
+    /// Start/resume sieving process
+    /// </summary>
+    void on_btnStart_clicked(void);
+
+    /// <summary>
+    /// Stop sieving process
+    /// </summary>
+    void on_btnStop_clicked(void);
+
+    /// <summary>
+    /// Called internally to update latest prime
+    /// </summary>
+    /// <param name="prime"></param>
+    void setPrime(long long prime);
 
 private:
-	Ui::SieveUI* ui;
-	std::unique_ptr<net::derpaul::sieve::CSieve> m_sieve;
-	std::future<void> m_processSieve;
+    /// <summary>
+    /// Pointer to QT ui object
+    /// </summary>
+    Ui::SieveUI *ui;
+
+    /// <summary>
+    /// Handle for running the sieve process as thread
+    /// </summary>
+    std::future<void> m_processSieve;
+
+    /// <summary>
+    /// The sieve algorithm
+    /// </summary>
+    std::unique_ptr<net::derpaul::sieve::CSieve> m_sieve;
 };
 #endif // SIEVEUI_H

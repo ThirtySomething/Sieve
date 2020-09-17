@@ -29,93 +29,94 @@
 // *****************************************************************************
 namespace net
 {
-	// *****************************************************************************
-	// Namespace of Sieve
-	// *****************************************************************************
-	namespace derpaul
-	{
-		// *****************************************************************************
-		// Namespace of Sieve
-		// *****************************************************************************
-		namespace sieve
-		{
-			/// <summary>
-			/// Data container for holding the prime data
-			/// </summary>
-			class CDataStorage
-			{
-			public:
-				/// <summary>
-				/// Constructor
-				/// </summary>
-				CDataStorage(void);
+    // *****************************************************************************
+    // Namespace of Sieve
+    // *****************************************************************************
+    namespace derpaul
+    {
+        // *****************************************************************************
+        // Namespace of Sieve
+        // *****************************************************************************
+        namespace sieve
+        {
+            /// <summary>
+            /// Data container for holding the prime data
+            /// </summary>
+            class CDataStorage
+            {
+            public:
+                /// <summary>
+                /// Constructor
+                /// </summary>
+                CDataStorage(void);
 
-				/// <summary>
-				/// Check if given number is NOT a prime
-				/// </summary>
-				/// <param name="number">Number to check as prime</param>
-				/// <returns>true if prime, otherwise false</returns>
-				bool isNumberNotPrime(long long number);
+                /// <summary>
+                /// Clear internal memory
+                /// </summary>
+                void clear(void);
 
-				/// <summary>
-				/// Mark number as NOT prime
-				/// </summary>
-				/// <param name="number">Number to mark</param>
-				void markNumberAsNotPrime(long long number);
+                /// <summary>
+                /// Load prime data from file
+                /// </summary>
+                /// <param name="filename">Filename containing prime data</param>
+                /// <returns>Prime where to restart</returns>
+                std::tuple<long long, long long> dataLoad(std::string filename);
 
-				/// <summary>
-				/// Search for next prime
-				/// </summary>
-				/// <param name="number">Number to number for search of next prime</param>
-				/// <returns>Next prime</returns>
-				long long findNextPrime(long long number);
+                /// <summary>
+                /// Save prime data to file
+                /// </summary>
+                /// <param name="filename">Filename to save data to</param>
+                /// <param name="currentPrime">Current prime working on</param>
+                /// <param name="maxSize">Upper border of sieve</param>
+                void dataSave(std::string filename, long long currentPrime, long long maxSize);
 
-				/// <summary>
-				/// Clear internal memory
-				/// </summary>
-				void clear(void);
+                /// <summary>
+                /// Export all primes to file
+                /// </summary>
+                /// <param name="filename">File to save to</param>
+                /// <param name="latestPrime">Latest prime to save</param>
+                void exportPrimes(std::string filename, long long latestPrime);
 
-				/// <summary>
-				/// Load prime data from file
-				/// </summary>
-				/// <param name="filename">Filename containing prime data</param>
-				/// <returns>Prime where to restart</returns>
-				std::tuple<long long, long long> dataLoad(std::string filename);
+                /// <summary>
+                /// Search for next prime
+                /// </summary>
+                /// <param name="number">Number to number for search of next prime</param>
+                /// <returns>Next prime</returns>
+                long long findNextPrime(long long number);
 
-				/// <summary>
-				/// Save prime data to file
-				/// </summary>
-				/// <param name="filename">Filename to save data to</param>
-				/// <param name="currentPrime">Current prime working on</param>
-				/// <param name="maxSize">Upper border of sieve</param>
-				void dataSave(std::string filename, long long currentPrime, long long maxSize);
+                /// <summary>
+                /// Check if given number is NOT a prime
+                /// </summary>
+                /// <param name="number">Number to check as prime</param>
+                /// <returns>true if prime, otherwise false</returns>
+                bool isNumberNotPrime(long long number);
 
-				/// <summary>
-				/// Show all found primes up to given border
-				/// </summary>
-				/// <param name="number">Upper border</param>
-				void showPrimes(long long number);
+                /// <summary>
+                /// Mark number as NOT prime
+                /// </summary>
+                /// <param name="number">Number to mark</param>
+                void markNumberAsNotPrime(long long number);
 
-			private:
-				/// <summary>
-				/// Internal static variable to memorize numbers of bits
-				/// </summary>
-				static const long long m_bitsize;
+            private:
+                /// <summary>
+                /// Internal method to map large number to index and position
+                /// </summary>
+                /// <param name="number">Number to map</param>
+                /// <returns>Structure with quote and remainder</returns>
+                lldiv_t getStoragePosition(long long number);
 
-				/// <summary>
-				/// Internal storage for primes
-				/// </summary>
-				std::map<long long, long long> m_storage;
+                /// <summary>
+                /// Internal static variable to memorize numbers of bits
+                /// </summary>
+                static const long long m_bitsize;
 
-				/// <summary>
-				/// Internal method to map large number to index and position
-				/// </summary>
-				/// <param name="number">Number to map</param>
-				/// <returns>Structure with quote and remainder</returns>
-				lldiv_t getStoragePosition(long long number);
-			};
-		}
-	}
-}
+                /// <summary>
+                /// Internal storage for primes
+                /// </summary>
+                std::map<long long, long long> m_storage;
+            };
+        } // namespace sieve
+    }     // namespace derpaul
+} // namespace net
 
-#endif
+#endif // CDATASTORAGE_H
