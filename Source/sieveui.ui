@@ -40,19 +40,6 @@
      <string>Stop</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btnReset">
-    <property name="geometry">
-     <rect>
-      <x>330</x>
-      <y>10</y>
-      <width>141</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Reset</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="lblPrimeLabel">
     <property name="geometry">
      <rect>
@@ -85,17 +72,36 @@
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLineEdit" name="leSieveMaxSize">
+   <widget class="QLabel" name="lblMaxSizeLabel">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>50</y>
+      <x>10</x>
+      <y>80</y>
       <width>141</width>
-      <height>20</height>
+      <height>21</height>
      </rect>
     </property>
-    <property name="inputMask">
-     <string>999999999999999999999</string>
+    <property name="text">
+     <string>Primes up to:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblMaxSizeNumber">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>80</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Here the maximum sieve size is displayed.</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
    </widget>
   </widget>
@@ -112,6 +118,8 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionNew"/>
+    <addaction name="separator"/>
     <addaction name="actionLoad"/>
     <addaction name="actionSave"/>
     <addaction name="separator"/>
@@ -145,6 +153,11 @@
   <action name="actionAbout_Sieve">
    <property name="text">
     <string>About Sieve</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
    </property>
   </action>
  </widget>

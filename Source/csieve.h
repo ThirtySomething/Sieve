@@ -29,96 +29,113 @@
 // *****************************************************************************
 namespace net
 {
-    // *****************************************************************************
-    // Namespace of Sieve
-    // *****************************************************************************
-    namespace derpaul
-    {
-        // *****************************************************************************
-        // Namespace of Sieve
-        // *****************************************************************************
-        namespace sieve
-        {
-            /// <summary>
-            /// Contains logic of sieve
-            /// </summary>
-            class CSieve
-            {
-            public:
-                /// <summary>
-                /// Constructor
-                /// </summary>
-                /// <param name="maxsize">Maximum prime to sieve to</param>
-                explicit CSieve(long long maxsize);
+	// *****************************************************************************
+	// Namespace of Sieve
+	// *****************************************************************************
+	namespace derpaul
+	{
+		// *****************************************************************************
+		// Namespace of Sieve
+		// *****************************************************************************
+		namespace sieve
+		{
+			/// <summary>
+			/// Contains logic of sieve
+			/// </summary>
+			class CSieve
+			{
+			public:
+				/// <summary>
+				/// Constructor
+				/// </summary>
+				/// <param name="maxsize">Maximum prime to sieve to</param>
+				explicit CSieve(long long maxsize);
 
-                /// <summary>
-                /// Destructor
-                /// </summary>
-                ~CSieve(void);
+				/// <summary>
+				/// Destructor
+				/// </summary>
+				~CSieve(void);
 
-                /// <summary>
-                /// Performs the sieve algorithm
-                /// <param name="updatePrime">Function called after new prime determined</param>
-                /// </summary>
-                void sievePrimes(std::function<void(long long)> updatePrime);
+				/// <summary>
+				/// Performs the sieve algorithm
+				/// <param name="updatePrime">Function called after new prime determined</param>
+				/// </summary>
+				void sievePrimes(std::function<void(long long)> updatePrime);
 
-                /// <summary>
-                /// Load sieve data from file
-                /// </summary>
-                /// <param name="filename">Filename of sieve data</param>
-                void dataLoad(std::string filename);
+				/// <summary>
+				/// Load sieve data from file
+				/// </summary>
+				/// <param name="filename">Filename of sieve data</param>
+				void dataLoad(std::string filename);
 
-                /// <summary>
-                /// Write sieve data to file
-                /// </summary>
-                /// <param name="filename">Filename of sieve data</param>
-                void dataSave(std::string filename);
+				/// <summary>
+				/// Write sieve data to file
+				/// </summary>
+				/// <param name="filename">Filename of sieve data</param>
+				void dataSave(std::string filename);
 
-                /// <summary>
-                /// Show all primes up to given limit
-                /// </summary>
-                /// <param name="maxsize">Upper border</param>
-                void showPrimes(long long maxsize);
+				/// <summary>
+				/// Show all primes up to given limit
+				/// </summary>
+				/// <param name="maxsize">Upper border</param>
+				void showPrimes(long long maxsize);
 
-                /// <summary>
-                /// Set internal flag to interrupt sieve process.
-                /// </summary>
-                void interruptSieving(void);
+				/// <summary>
+				/// Set internal flag to interrupt sieve process.
+				/// </summary>
+				void interruptSieving(void);
 
-            private:
-                /// <summary>
-                /// Internal data storage of sieve
-                /// </summary>
-                CDataStorage m_storage;
+				/// <summary>
+				/// Get current max size of sieve
+				/// </summary>
+				/// <returns>Current max size of sieve</returns>
+				long long getMaxSize(void);
 
-                /// <summary>
-                /// Upper border of sieve
-                /// </summary>
-                long long m_maxSize;
+				/// <summary>
+				/// Get latest prime of sieve
+				/// </summary>
+				/// <returns>Latest prime of sieve</returns>
+				long long getLatestPrime(void);
 
-                /// <summary>
-                /// Memorize current prime for saving purposes
-                /// </summary>
-                long long m_currentPrime;
+				/// <summary>
+				/// Default max size for new instances
+				/// </summary>
+				static const long long DEFAULT_MAX_SIZE;
 
-                /// <summary>
-                /// Flag to abort sieve of primes
-                /// </summary>
-                bool m_stop_work;
+			private:
+				/// <summary>
+				/// Internal data storage of sieve
+				/// </summary>
+				CDataStorage m_storage;
 
-                /// <summary>
-                /// Mark all multiples of given prime up to max size of sieve
-                /// </summary>
-                /// <param name="prime">Prime to mark multiples</param>
-                void markPrimeMultiples(long long prime);
+				/// <summary>
+				/// Upper border of sieve
+				/// </summary>
+				long long m_maxSize;
 
-                /// <summary>
-                /// Prepare storage for usage in sieve
-                /// </summary>
-                void initStorage(void);
-            };
-        }
-    }
+				/// <summary>
+				/// Memorize current prime for saving purposes
+				/// </summary>
+				long long m_currentPrime;
+
+				/// <summary>
+				/// Flag to abort sieve of primes
+				/// </summary>
+				bool m_stop_work;
+
+				/// <summary>
+				/// Mark all multiples of given prime up to max size of sieve
+				/// </summary>
+				/// <param name="prime">Prime to mark multiples</param>
+				void markPrimeMultiples(long long prime);
+
+				/// <summary>
+				/// Prepare storage for usage in sieve
+				/// </summary>
+				void initStorage(void);
+			};
+		}
+	}
 }
 
 #endif

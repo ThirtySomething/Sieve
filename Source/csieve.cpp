@@ -36,31 +36,35 @@ namespace net
 		{
 			// *****************************************************************************
 			// *****************************************************************************
-			CSieve::CSieve(long long maxsize) :
-				m_maxSize(maxsize),
-                m_currentPrime(1LL),
-				m_stop_work(false)
-			{
-                initStorage();
-            }
+			const long long CSieve::DEFAULT_MAX_SIZE = 10000LL;
 
 			// *****************************************************************************
 			// *****************************************************************************
-            CSieve::~CSieve(void)
+			CSieve::CSieve(long long maxsize) :
+				m_maxSize(maxsize),
+				m_currentPrime(1LL),
+				m_stop_work(false)
+			{
+				initStorage();
+			}
+
+			// *****************************************************************************
+			// *****************************************************************************
+			CSieve::~CSieve(void)
 			{
 			}
 
 			// *****************************************************************************
 			// *****************************************************************************
-            void CSieve::sievePrimes(std::function<void(long long)> updatePrime)
+			void CSieve::sievePrimes(std::function<void(long long)> updatePrime)
 			{
-                m_stop_work = false;
+				m_stop_work = false;
 
 				while (!m_stop_work && (m_currentPrime < m_maxSize))
 				{
-                    m_currentPrime = m_storage.findNextPrime(m_currentPrime);
-                    updatePrime(m_currentPrime);
-                    markPrimeMultiples(m_currentPrime);
+					m_currentPrime = m_storage.findNextPrime(m_currentPrime);
+					updatePrime(m_currentPrime);
+					markPrimeMultiples(m_currentPrime);
 				}
 			}
 
@@ -68,16 +72,16 @@ namespace net
 			// *****************************************************************************
 			void CSieve::dataLoad(std::string filename)
 			{
-                auto[currentPrime, maxSize] = m_storage.dataLoad(filename);
-                m_currentPrime = currentPrime;
-                m_maxSize = maxSize;
+				auto [currentPrime, maxSize] = m_storage.dataLoad(filename);
+				m_currentPrime = currentPrime;
+				m_maxSize = maxSize;
 			}
 
 			// *****************************************************************************
 			// *****************************************************************************
 			void CSieve::dataSave(std::string filename)
 			{
-                m_storage.dataSave(filename, m_currentPrime, m_maxSize);
+				m_storage.dataSave(filename, m_currentPrime, m_maxSize);
 			}
 
 			// *****************************************************************************
@@ -89,7 +93,7 @@ namespace net
 
 			// *****************************************************************************
 			// *****************************************************************************
-            void CSieve::markPrimeMultiples(long long prime)
+			void CSieve::markPrimeMultiples(long long prime)
 			{
 				for (long long current = prime * 2; current < m_maxSize; current += prime)
 				{
@@ -97,21 +101,36 @@ namespace net
 				}
 			}
 
-            // *****************************************************************************
-            // *****************************************************************************
-            void CSieve::interruptSieving(void)
-            {
-                m_stop_work = true;
-            }
+			// *****************************************************************************
+			// *****************************************************************************
+			void CSieve::interruptSieving(void)
+			{
+				m_stop_work = true;
+			}
 
-            // *****************************************************************************
-            // *****************************************************************************
-            void CSieve::initStorage(void)
-            {
-                m_storage.clear();
-                m_storage.markNumberAsNotPrime(0LL);
-                m_storage.markNumberAsNotPrime(1LL);
-            }
+			// *****************************************************************************
+			// *****************************************************************************
+			long long CSieve::getMaxSize(void)
+			{
+				return m_maxSize;
+			}
+
+
+			// *****************************************************************************
+			// *****************************************************************************
+			long long CSieve::getLatestPrime(void)
+			{
+				return m_currentPrime;
+			}
+
+			// *****************************************************************************
+			// *****************************************************************************
+			void CSieve::initStorage(void)
+			{
+				m_storage.clear();
+				m_storage.markNumberAsNotPrime(0LL);
+				m_storage.markNumberAsNotPrime(1LL);
+			}
 		}
 	}
 }

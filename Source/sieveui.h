@@ -30,41 +30,36 @@ QT_END_NAMESPACE
 
 class SieveUI : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    SieveUI(QWidget *parent = nullptr);
-    ~SieveUI();
-
-    void resetSieve();
+	SieveUI(QWidget* parent = nullptr);
+	~SieveUI();
 
 public slots:
-    void setPrime(long long prime);
+	void setPrime(long long prime);
 
 signals:
-    void primeChanged(long long newPrime);
+	void primeChanged(long long newPrime);
 
 private slots:
-    void on_actionQuit_triggered();
+	void on_actionQuit_triggered();
 
-    void on_actionLoad_triggered();
+	void on_actionLoad_triggered();
 
-    void on_actionSave_triggered();
+	void on_actionSave_triggered();
+	
+	void on_actionNew_triggered();
 
-    void on_actionAbout_Sieve_triggered();
+	void on_actionAbout_Sieve_triggered();
 
-    void on_btnStart_clicked();
+	void on_btnStart_clicked();
 
-    void on_btnStop_clicked();
-
-    void on_btnReset_clicked();
-
-    void on_leSieveMaxSize_textChanged(const QString &arg1);
+	void on_btnStop_clicked();
 
 private:
-    Ui::SieveUI *ui;  
-    std::unique_ptr<net::derpaul::sieve::CSieve> m_sieve;
-    std::future<void> m_processSieve;
-    void setPrimeMaxSize(void);
+	Ui::SieveUI* ui;
+	std::unique_ptr<net::derpaul::sieve::CSieve> m_sieve;
+	std::future<void> m_processSieve;
 };
 #endif // SIEVEUI_H
