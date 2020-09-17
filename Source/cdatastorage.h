@@ -66,9 +66,9 @@ namespace net
                 /// Save prime data to file
                 /// </summary>
                 /// <param name="filename">Filename to save data to</param>
-                /// <param name="currentPrime">Current prime working on</param>
-                /// <param name="maxSize">Upper border of sieve</param>
-                void dataSave(std::string filename, long long currentPrime, long long maxSize);
+                /// <param name="latestPrime">Latest determined prime</param>
+                /// <param name="sieveSize">Upper border of sieve</param>
+                void dataSave(std::string filename, long long latestPrime, long long sieveSize);
 
                 /// <summary>
                 /// Export all primes to file

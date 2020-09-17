@@ -48,8 +48,8 @@ namespace net
                 /// <summary>
                 /// Constructor
                 /// </summary>
-                /// <param name="maxsize">Maximum prime to sieve to</param>
-                explicit CSieve(long long maxsize);
+                /// <param name="sieveSize">Size of sieve</param>
+                explicit CSieve(long long sieveSize);
 
                 /// <summary>
                 /// Destructor
@@ -81,10 +81,10 @@ namespace net
                 long long getLatestPrime(void);
 
                 /// <summary>
-                /// Get current max size of sieve
+                /// Get size of sieve
                 /// </summary>
-                /// <returns>Current max size of sieve</returns>
-                long long getMaxSize(void);
+                /// <returns>Size of sieve</returns>
+                long long getSieveSize(void);
 
                 /// <summary>
                 /// Set internal flag to interrupt sieve process.
@@ -98,9 +98,9 @@ namespace net
                 void sievePrimes(std::function<void(long long)> updatePrime);
 
                 /// <summary>
-                /// Default max size for new instances
+                /// Default sieve size for new instances
                 /// </summary>
-                static const long long DEFAULT_MAX_SIZE;
+                static const long long DEFAULT_SIEVE_SIZE;
 
             private:
                 /// <summary>
@@ -109,20 +109,20 @@ namespace net
                 void initStorage(void);
 
                 /// <summary>
-                /// Mark all multiples of given prime up to max size of sieve
+                /// Mark all multiples of given prime up to sieve size of sieve
                 /// </summary>
                 /// <param name="prime">Prime to mark multiples</param>
                 void markPrimeMultiples(long long prime);
 
                 /// <summary>
-                /// Memorize current prime for saving purposes
+                /// Memorize latest prime for saving purposes
                 /// </summary>
-                long long m_currentPrime;
+                long long m_latestPrime;
 
                 /// <summary>
                 /// Upper border of sieve
                 /// </summary>
-                long long m_maxSize;
+                long long m_sieveSize;
 
                 /// <summary>
                 /// Flag to abort sieve of primes

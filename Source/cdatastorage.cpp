@@ -63,27 +63,27 @@ namespace net
             {
                 std::ifstream infile(filename);
                 m_storage.clear();
-                long long index, bits, currentPrime, maxSize;
-                infile >> currentPrime;
-                infile >> maxSize;
+                long long index, bits, latestPrime, sieveSize;
+                infile >> latestPrime;
+                infile >> sieveSize;
                 while (infile >> index >> bits)
                 {
                     m_storage[index] = bits;
                 }
                 infile.close();
 
-                return {currentPrime, maxSize};
+                return {latestPrime, sieveSize};
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            void CDataStorage::dataSave(std::string filename, long long currentPrime, long long maxSize)
+            void CDataStorage::dataSave(std::string filename, long long latestPrime, long long sieveSize)
             {
                 std::ofstream myfile;
                 myfile.open(filename);
 
-                myfile << currentPrime << std::endl;
-                myfile << maxSize << std::endl;
+                myfile << latestPrime << std::endl;
+                myfile << sieveSize << std::endl;
                 for (auto [idx, storagePart] : m_storage)
                 {
                     myfile << idx << " " << storagePart << std::endl;
@@ -99,11 +99,11 @@ namespace net
                 std::ofstream myfile;
                 myfile.open(filename);
 
-                for (long long current = 2L; current < latestPrime; current++)
+                for (long long currentPrime = 2L; currentPrime < latestPrime; currentPrime++)
                 {
-                    if (!isNumberNotPrime(current))
+                    if (!isNumberNotPrime(currentPrime))
                     {
-                        myfile << current << std::endl;
+                        myfile << currentPrime << std::endl;
                     }
                 }
                 myfile.close();

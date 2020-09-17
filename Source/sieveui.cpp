@@ -31,9 +31,10 @@ SieveUI::SieveUI(QWidget *parent)
 {
     ui->setupUi(this);
     QObject::connect(this, &SieveUI::primeChanged, this, &SieveUI::setPrime);
-    m_sieve = std::make_unique<net::derpaul::sieve::CSieve>(net::derpaul::sieve::CSieve::DEFAULT_MAX_SIZE);
+    m_sieve = std::make_unique<net::derpaul::sieve::CSieve>(net::derpaul::sieve::CSieve::DEFAULT_SIEVE_SIZE);
     ui->lblPrimeNumber->setText(QString::number(m_sieve->getLatestPrime()));
-    ui->lblMaxSizeNumber->setText(QString::number(m_sieve->getMaxSize()));
+    ui->lblSieveSizeNumber->setText(QString::number(m_sieve->getSieveSize()));
+    m_processSieve = std::future<void>();
 }
 
 // *****************************************************************************
@@ -61,7 +62,7 @@ void SieveUI::on_actionExport_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(
         this,
-        tr("Export primes"), "",
+        tr("Export primes"), "primes.txt",
         tr("Primes (*.txt);;All Files (*)"));
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -75,13 +76,13 @@ void SieveUI::on_actionLoad_triggered()
 {
     QString fileName = QFileDialog::getOpenFileName(
         this,
-        tr("Load prime data"), "",
-        tr("Prime data (*.pd);;All Files (*)"));
+        tr("Load sieve data"), "sieve.dat",
+        tr("Sieve data (*.dat);;All Files (*)"));
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
     m_sieve->dataLoad(fileName.toStdString());
     ui->lblPrimeNumber->setText(QString::number(m_sieve->getLatestPrime()));
-    ui->lblMaxSizeNumber->setText(QString::number(m_sieve->getMaxSize()));
+    ui->lblSieveSizeNumber->setText(QString::number(m_sieve->getSieveSize()));
     m_processSieve = std::future<void>();
     QApplication::restoreOverrideCursor();
 }
@@ -91,19 +92,19 @@ void SieveUI::on_actionLoad_triggered()
 void SieveUI::on_actionNew_triggered()
 {
     bool ok;
-    long long newMaxSize = QInputDialog::getInt(this, tr("Please enter max size"),
-                                                tr("Max size:"),
-                                                net::derpaul::sieve::CSieve::DEFAULT_MAX_SIZE,
-                                                LONG_MIN,
-                                                LONG_MAX,
-                                                1,
-                                                &ok);
+    long long newSieveSize = QInputDialog::getInt(this, tr("Please enter sieve size"),
+                                                  tr("Sieve size:"),
+                                                  net::derpaul::sieve::CSieve::DEFAULT_SIEVE_SIZE,
+                                                  LONG_MIN,
+                                                  LONG_MAX,
+                                                  1,
+                                                  &ok);
 
     if (ok)
     {
-        m_sieve = std::make_unique<net::derpaul::sieve::CSieve>(newMaxSize);
+        m_sieve = std::make_unique<net::derpaul::sieve::CSieve>(newSieveSize);
         ui->lblPrimeNumber->setText(QString::number(m_sieve->getLatestPrime()));
-        ui->lblMaxSizeNumber->setText(QString::number(m_sieve->getMaxSize()));
+        ui->lblSieveSizeNumber->setText(QString::number(m_sieve->getSieveSize()));
         m_processSieve = std::future<void>();
     }
 }
@@ -121,8 +122,8 @@ void SieveUI::on_actionSave_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(
         this,
-        tr("Save prime data"), "",
-        tr("Prime data (*.pd);;All Files (*)"));
+        tr("Save sieve data"), "sieve.dat",
+        tr("Sieve data (*.dat);;All Files (*)"));
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
     m_sieve->dataSave(fileName.toStdString());

@@ -50,7 +50,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Current prime number:</string>
+     <string>Latest prime number:</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -66,13 +66,13 @@
      </rect>
     </property>
     <property name="text">
-     <string>Here the current prime is displayed.</string>
+     <string>Display latest prime.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="lblMaxSizeLabel">
+   <widget class="QLabel" name="lblSieveSizeLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -88,7 +88,7 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="lblMaxSizeNumber">
+   <widget class="QLabel" name="lblSieveSizeNumber">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -98,7 +98,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Here the maximum sieve size is displayed.</string>
+     <string>Display sieve size.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -139,12 +139,12 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoad">
    <property name="text">
-    <string>Load</string>
+    <string>Load sieve</string>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>Save</string>
+    <string>Save sieve</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -159,12 +159,12 @@
   </action>
   <action name="actionNew">
    <property name="text">
-    <string>New</string>
+    <string>New sieve</string>
    </property>
   </action>
   <action name="actionExport">
    <property name="text">
-    <string>Export</string>
+    <string>Export primes</string>
    </property>
   </action>
  </widget>
