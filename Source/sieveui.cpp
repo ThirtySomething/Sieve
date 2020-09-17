@@ -82,6 +82,7 @@ void SieveUI::on_actionLoad_triggered()
     m_sieve->dataLoad(fileName.toStdString());
     ui->lblPrimeNumber->setText(QString::number(m_sieve->getLatestPrime()));
     ui->lblMaxSizeNumber->setText(QString::number(m_sieve->getMaxSize()));
+    m_processSieve = std::future<void>();
     QApplication::restoreOverrideCursor();
 }
 
@@ -103,6 +104,7 @@ void SieveUI::on_actionNew_triggered()
         m_sieve = std::make_unique<net::derpaul::sieve::CSieve>(newMaxSize);
         ui->lblPrimeNumber->setText(QString::number(m_sieve->getLatestPrime()));
         ui->lblMaxSizeNumber->setText(QString::number(m_sieve->getMaxSize()));
+        m_processSieve = std::future<void>();
     }
 }
 

@@ -119,6 +119,7 @@ namespace net
                 m_storage.clear();
                 m_storage.markNumberAsNotPrime(0LL);
                 m_storage.markNumberAsNotPrime(1LL);
+                m_currentPrime = 1LL;
             }
 
             // *****************************************************************************
