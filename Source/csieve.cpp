@@ -102,13 +102,18 @@ namespace net
             // *****************************************************************************
             void CSieve::sievePrimes(std::function<void(long long)> updatePrime)
             {
+                long long primeTemp = 0LL;
                 m_stop_work = false;
 
                 while (!m_stop_work && (m_latestPrime < m_sieveSize))
                 {
-                    m_latestPrime = m_storage.findNextPrime(m_latestPrime);
-                    updatePrime(m_latestPrime);
-                    markPrimeMultiples(m_latestPrime);
+                    primeTemp = m_storage.findNextPrime(m_latestPrime);
+                    updatePrime(primeTemp);
+                    markPrimeMultiples(primeTemp);
+                    if (!m_stop_work)
+                    {
+                        m_latestPrime = primeTemp;
+                    }
                 }
             }
 
@@ -126,7 +131,7 @@ namespace net
             // *****************************************************************************
             void CSieve::markPrimeMultiples(long long prime)
             {
-                for (long long primeMultiple = prime * 2; primeMultiple < m_sieveSize; primeMultiple += prime)
+                for (long long primeMultiple = prime * 2; ((!m_stop_work) && (primeMultiple < m_sieveSize)); primeMultiple += prime)
                 {
                     m_storage.markNumberAsNotPrime(primeMultiple);
                 }

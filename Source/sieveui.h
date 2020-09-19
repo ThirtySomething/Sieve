@@ -21,6 +21,8 @@
 #define SIEVEUI_H
 
 #include <QMainWindow>
+#include <QStatusBar>
+#include <QLabel>
 #include "csieve.h"
 #include <future>
 
@@ -106,9 +108,14 @@ private slots:
 
 private:
     /// <summary>
-    /// Pointer to QT ui object
+    /// Initialize UI elements
     /// </summary>
-    Ui::SieveUI *ui;
+    void initQtElements(void);
+
+    /// <summary>
+    /// Number of available CPU cores
+    /// </summary>
+    static const unsigned int m_numberOfCores;
 
     /// <summary>
     /// Handle for running the sieve process as thread
@@ -119,5 +126,15 @@ private:
     /// The sieve algorithm
     /// </summary>
     std::unique_ptr<net::derpaul::sieve::CSieve> m_sieve;
+
+    /// <summary>
+    /// Statusbar of main windows
+    /// </summary>
+    QStatusBar* m_statusBar;
+
+    /// <summary>
+    /// Pointer to QT ui object
+    /// </summary>
+    Ui::SieveUI* ui;
 };
 #endif // SIEVEUI_H

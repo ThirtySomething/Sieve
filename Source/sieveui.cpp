@@ -23,6 +23,12 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <climits>
+#include <thread>
+
+
+// *****************************************************************************
+// *****************************************************************************
+const unsigned int m_numberOfCores = std::thread::hardware_concurrency();
 
 // *****************************************************************************
 // *****************************************************************************
@@ -31,10 +37,11 @@ SieveUI::SieveUI(QWidget *parent)
 {
     ui->setupUi(this);
     QObject::connect(this, &SieveUI::primeChanged, this, &SieveUI::setPrime);
+
     m_sieve = std::make_unique<net::derpaul::sieve::CSieve>(net::derpaul::sieve::CSieve::DEFAULT_SIEVE_SIZE);
-    ui->lblPrimeNumber->setText(QString::number(m_sieve->getLatestPrime()));
-    ui->lblSieveSizeNumber->setText(QString::number(m_sieve->getSieveSize()));
     m_processSieve = std::future<void>();
+
+    initQtElements();
 }
 
 // *****************************************************************************
@@ -144,6 +151,7 @@ void SieveUI::on_btnStart_clicked()
             emit primeChanged(currentPrime);
         });
     });
+    m_statusBar->showMessage("Sieving...");
 }
 
 // *****************************************************************************
@@ -156,6 +164,7 @@ void SieveUI::on_btnStop_clicked()
         m_processSieve.wait();
         m_processSieve = std::future<void>();
     }
+    m_statusBar->showMessage("");
 }
 
 // *****************************************************************************
@@ -163,4 +172,14 @@ void SieveUI::on_btnStop_clicked()
 void SieveUI::setPrime(long long prime)
 {
     ui->lblPrimeNumber->setText(QString::number(prime));
+}
+
+// *****************************************************************************
+// *****************************************************************************
+void SieveUI::initQtElements(void)
+{
+    ui->lblPrimeNumber->setText(QString::number(m_sieve->getLatestPrime()));
+    ui->lblSieveSizeNumber->setText(QString::number(m_sieve->getSieveSize()));
+
+    m_statusBar = SieveUI::statusBar();
 }

@@ -22,6 +22,10 @@ This is a program to perform the [Sieve of Eratosthenes][soe].
 
 ## Todo
 - Features/ideas of the future, e. g. another sieve algorithm, for example the [Sieve of Atkin][soa]
+- Split marking of multiples of primes into threads:
+    - [x] Detect number of CPU cores.
+    - [ ] Split range of sieve into several parts.
+    - [ ] Develop algorithm to mark multiples of primes in each range.
 
 [soa]: https://en.wikipedia.org/wiki/Sieve_of_Atkin
 [soe]: https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes
