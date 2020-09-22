@@ -113,11 +113,6 @@ private:
     void initQtElements(void);
 
     /// <summary>
-    /// Number of available CPU cores
-    /// </summary>
-    static const unsigned int m_numberOfCores;
-
-    /// <summary>
     /// Handle for running the sieve process as thread
     /// </summary>
     std::future<void> m_processSieve;

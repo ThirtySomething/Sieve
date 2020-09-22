@@ -120,6 +120,11 @@ namespace net
                 long long m_latestPrime;
 
                 /// <summary>
+                /// Number of available CPU cores
+                /// </summary>
+                static const unsigned int m_numberOfCores;
+
+                /// <summary>
                 /// Upper border of sieve
                 /// </summary>
                 long long m_sieveSize;

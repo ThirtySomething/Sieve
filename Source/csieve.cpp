@@ -38,6 +38,7 @@ namespace net
             // Constants
             // *****************************************************************************
             const long long CSieve::DEFAULT_SIEVE_SIZE = 10000LL;
+            const unsigned int CSieve::m_numberOfCores = std::thread::hardware_concurrency();
 
             // *****************************************************************************
             // *****************************************************************************
@@ -131,9 +132,15 @@ namespace net
             // *****************************************************************************
             void CSieve::markPrimeMultiples(long long prime)
             {
-                for (long long primeMultiple = prime * 2; ((!m_stop_work) && (primeMultiple < m_sieveSize)); primeMultiple += prime)
+                if (m_numberOfCores == 1)
                 {
-                    m_storage.markNumberAsNotPrime(primeMultiple);
+                    for (long long primeMultiple = prime * 2; ((!m_stop_work) && (primeMultiple < m_sieveSize)); primeMultiple += prime)
+                    {
+                        m_storage.markNumberAsNotPrime(primeMultiple);
+                    }
+                }
+                else
+                {
                 }
             }
         } // namespace sieve
