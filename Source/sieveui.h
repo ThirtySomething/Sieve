@@ -20,7 +20,7 @@
 #ifndef SIEVEUI_H
 #define SIEVEUI_H
 
-#include "csieve.h"
+#include "csievecpu.h"
 #include <QLabel>
 #include <QMainWindow>
 #include <QStatusBar>
@@ -120,7 +120,7 @@ private:
     /// <summary>
     /// The sieve algorithm
     /// </summary>
-    std::unique_ptr<net::derpaul::sieve::CSieve> m_sieve;
+    std::unique_ptr<net::derpaul::sieve::CSieveCPU> m_sieve;
 
     /// <summary>
     /// Statusbar of main windows

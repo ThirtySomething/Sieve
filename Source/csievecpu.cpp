@@ -17,7 +17,7 @@
 // along with Sieve. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
 
-#include "csieve.h"
+#include "csievecpu.h"
 #include <iostream>
 #include <stdlib.h>
 #include <sstream>
@@ -40,12 +40,12 @@ namespace net
             // *****************************************************************************
             // Constants
             // *****************************************************************************
-            const long long CSieve::DEFAULT_SIEVE_SIZE = 10000LL;
-            const unsigned int CSieve::m_numberOfCores = std::thread::hardware_concurrency();
+            const long long CSieveCPU::DEFAULT_SIEVE_SIZE = 10000LL;
+            const unsigned int CSieveCPU::m_numberOfCores = std::thread::hardware_concurrency();
 
             // *****************************************************************************
             // *****************************************************************************
-            CSieve::CSieve(long long sieveSize) : m_sieveSize(sieveSize),
+            CSieveCPU::CSieveCPU(long long sieveSize) : m_sieveSize(sieveSize),
                                                   m_latestPrime(1LL),
                                                   m_stop_work(false)
             {
@@ -54,13 +54,13 @@ namespace net
 
             // *****************************************************************************
             // *****************************************************************************
-            CSieve::~CSieve(void)
+            CSieveCPU::~CSieveCPU(void)
             {
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieve::dataLoad(std::string filename)
+            void CSieveCPU::dataLoad(std::string filename)
             {
                 auto [latestPrime, sieveSize] = m_storage.dataLoad(filename);
                 m_latestPrime = latestPrime;
@@ -69,42 +69,42 @@ namespace net
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieve::dataSave(std::string filename)
+            void CSieveCPU::dataSave(std::string filename)
             {
                 m_storage.dataSave(filename, m_latestPrime, m_sieveSize);
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieve::exportPrimes(std::string filename)
+            void CSieveCPU::exportPrimes(std::string filename)
             {
                 m_storage.exportPrimes(filename, m_latestPrime);
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            long long CSieve::getLatestPrime(void)
+            long long CSieveCPU::getLatestPrime(void)
             {
                 return m_latestPrime;
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            long long CSieve::getSieveSize(void)
+            long long CSieveCPU::getSieveSize(void)
             {
                 return m_sieveSize;
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieve::interruptSieving(void)
+            void CSieveCPU::interruptSieving(void)
             {
                 m_stop_work = true;
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieve::sievePrimes(std::function<void(long long)> updatePrime)
+            void CSieveCPU::sievePrimes(std::function<void(long long)> updatePrime)
             {
                 long long primeTemp = 0LL;
                 m_stop_work = false;
@@ -123,7 +123,7 @@ namespace net
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieve::initStorage(void)
+            void CSieveCPU::initStorage(void)
             {
                 m_storage.clear();
                 m_storage.markNumberAsNotPrime(0LL);
@@ -133,7 +133,7 @@ namespace net
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieve::markPrimeMultiples(long long prime)
+            void CSieveCPU::markPrimeMultiples(long long prime)
             {
                 std::vector<std::future<void> > markThreads;
                 lldiv_t parts = lldiv(m_sieveSize, static_cast<long long>(m_numberOfCores));
@@ -144,10 +144,10 @@ namespace net
                     {
                         continue;
                     }
-                    auto markSegment = std::async(std::launch::async, &CSieve::markPrimeMultiplesSegment, this, (parts.quot * i), (parts.quot * (i + 1LL)), prime);
+                    auto markSegment = std::async(std::launch::async, &CSieveCPU::markPrimeMultiplesSegment, this, (parts.quot * i), (parts.quot * (i + 1LL)), prime);
                     markThreads.push_back(std::move(markSegment));
                 }
-                auto markSegment = std::async(std::launch::async, &CSieve::markPrimeMultiplesSegment, this, (parts.quot * m_numberOfCores), m_sieveSize, prime);
+                auto markSegment = std::async(std::launch::async, &CSieveCPU::markPrimeMultiplesSegment, this, (parts.quot * m_numberOfCores), m_sieveSize, prime);
                 markThreads.push_back(std::move(markSegment));
 
                 for (auto &th : markThreads)
@@ -158,7 +158,7 @@ namespace net
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieve::markPrimeMultiplesSegment(long long segmentStart, long long segmentEnd, long long prime)
+            void CSieveCPU::markPrimeMultiplesSegment(long long segmentStart, long long segmentEnd, long long prime)
             {
                 lldiv_t parts = lldiv(segmentStart, prime);
 

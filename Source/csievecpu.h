@@ -40,21 +40,21 @@ namespace net
         namespace sieve
         {
             /// <summary>
-            /// Contains logic of sieve
+            /// Contains logic of sieve for sieving with CPU
             /// </summary>
-            class CSieve
+            class CSieveCPU
             {
             public:
                 /// <summary>
                 /// Constructor
                 /// </summary>
                 /// <param name="sieveSize">Size of sieve</param>
-                explicit CSieve(long long sieveSize);
+                explicit CSieveCPU(long long sieveSize);
 
                 /// <summary>
                 /// Destructor
                 /// </summary>
-                ~CSieve(void);
+                ~CSieveCPU(void);
 
                 /// <summary>
                 /// Load sieve data from file

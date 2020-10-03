@@ -109,13 +109,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cdatastorage.cpp" />
-    <ClCompile Include="csieve.cpp" />
+    <ClCompile Include="csievecpu.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="sieveui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cdatastorage.h" />
-    <ClInclude Include="csieve.h" />
+    <ClInclude Include="csievecpu.h" />
     <QtMoc Include="sieveui.h" />
   </ItemGroup>
   <ItemGroup>
