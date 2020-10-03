@@ -19,12 +19,11 @@
 
 #include "ui_sieveui.h"
 #include "sieveui.h"
-#include <QInputDialog>
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <climits>
 #include <thread>
-
 
 // *****************************************************************************
 // *****************************************************************************

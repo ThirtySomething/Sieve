@@ -19,8 +19,11 @@
 
 #include "csieve.h"
 #include <iostream>
-#include <windows.h>
+#include <stdlib.h>
+#include <sstream>
 #include <thread>
+#include <vector>
+#include <windows.h>
 
 // *****************************************************************************
 // *****************************************************************************
@@ -132,17 +135,46 @@ namespace net
             // *****************************************************************************
             void CSieve::markPrimeMultiples(long long prime)
             {
-                if (m_numberOfCores == 1)
+                std::vector<std::future<void> > markThreads;
+                lldiv_t parts = lldiv(m_sieveSize, static_cast<long long>(m_numberOfCores));
+
+                for (long long i = 0; i < m_numberOfCores; i++)
                 {
-                    for (long long primeMultiple = prime * 2; ((!m_stop_work) && (primeMultiple < m_sieveSize)); primeMultiple += prime)
+                    if ((parts.quot * (i + 1LL)) < prime)
                     {
-                        m_storage.markNumberAsNotPrime(primeMultiple);
+                        continue;
                     }
+                    auto markSegment = std::async(std::launch::async, &CSieve::markPrimeMultiplesSegment, this, (parts.quot * i), (parts.quot * (i + 1LL)), prime);
+                    markThreads.push_back(std::move(markSegment));
                 }
-                else
+                auto markSegment = std::async(std::launch::async, &CSieve::markPrimeMultiplesSegment, this, (parts.quot * m_numberOfCores), m_sieveSize, prime);
+                markThreads.push_back(std::move(markSegment));
+
+                for (auto &th : markThreads)
                 {
+                    th.wait();
                 }
             }
+
+            // *****************************************************************************
+            // *****************************************************************************
+            void CSieve::markPrimeMultiplesSegment(long long segmentStart, long long segmentEnd, long long prime)
+            {
+                lldiv_t parts = lldiv(segmentStart, prime);
+
+                long long startMark = (parts.quot + 1LL) * prime;
+                if (parts.rem == 0LL)
+                {
+                    startMark = parts.quot * prime;
+                }
+
+                startMark = std::max<long long>(startMark, (prime * 2));
+                for (long long primeMultiple = startMark; ((!m_stop_work) && (primeMultiple < segmentEnd)); primeMultiple += prime)
+                {
+                    m_storage.markNumberAsNotPrime(primeMultiple);
+                }
+            }
+
         } // namespace sieve
     }     // namespace derpaul
 } // namespace net

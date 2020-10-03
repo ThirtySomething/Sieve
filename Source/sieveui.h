@@ -20,10 +20,10 @@
 #ifndef SIEVEUI_H
 #define SIEVEUI_H
 
+#include "csieve.h"
+#include <QLabel>
 #include <QMainWindow>
 #include <QStatusBar>
-#include <QLabel>
-#include "csieve.h"
 #include <future>
 
 QT_BEGIN_NAMESPACE
@@ -125,11 +125,11 @@ private:
     /// <summary>
     /// Statusbar of main windows
     /// </summary>
-    QStatusBar* m_statusBar;
+    QStatusBar *m_statusBar;
 
     /// <summary>
     /// Pointer to QT ui object
     /// </summary>
-    Ui::SieveUI* ui;
+    Ui::SieveUI *ui;
 };
 #endif // SIEVEUI_H

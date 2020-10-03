@@ -21,8 +21,8 @@
 #define CSIEVE_H
 
 #include "cdatastorage.h"
-#include <string>
 #include <future>
+#include <string>
 
 // *****************************************************************************
 // Namespace of Sieve
@@ -113,6 +113,14 @@ namespace net
                 /// </summary>
                 /// <param name="prime">Prime to mark multiples</param>
                 void markPrimeMultiples(long long prime);
+
+                /// <summary>
+                /// Mark all multiples of given prime for a sieve segment
+                /// </summary>
+                /// <param name="segmentStart">Start of sieve segment</param>
+                /// <param name="segmentEnd">End of sieve segment</param>
+                /// <param name="prime">Prime to mark multiples</param>
+                void markPrimeMultiplesSegment(long long segmentStart, long long segmentEnd, long long prime);
 
                 /// <summary>
                 /// Memorize latest prime for saving purposes

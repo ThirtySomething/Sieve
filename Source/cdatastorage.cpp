@@ -18,9 +18,9 @@
 //******************************************************************************
 
 #include "cdatastorage.h"
-#include <iostream>
-#include <fstream>
 #include <algorithm>
+#include <fstream>
+#include <iostream>
 #include <iterator>
 
 // *****************************************************************************

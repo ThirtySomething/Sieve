@@ -44,3 +44,5 @@
 /build-Sieve-*
 /Source/Sieve.vcxproj.user
 /Source/Sieve.vcxproj.filters
+Source/primes.txt
+Source/sieve.dat
