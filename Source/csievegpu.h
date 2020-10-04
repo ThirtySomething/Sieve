@@ -17,13 +17,14 @@
 // along with Sieve. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
 
-#ifndef CDATASTORAGE_H
-#define CDATASTORAGE_H
+#ifndef CSIEVE_H
+#define CSIEVE_H
 
-#include <map>
-#include <stdlib.h>
+#include "cdatastorage.h"
+#include <cuda_runtime_api.h>
+#include <cuda.h>
+#include <future>
 #include <string>
-#include <vector>
 
 // *****************************************************************************
 // Namespace of Sieve
@@ -41,101 +42,101 @@ namespace net
         namespace sieve
         {
             /// <summary>
-            /// Data container for holding the prime data
+            /// Contains logic of sieve for sieving with GPU
             /// </summary>
-            class CDataStorage
+            class CSieveGPU
             {
             public:
                 /// <summary>
                 /// Constructor
                 /// </summary>
                 /// <param name="sieveSize">Size of sieve</param>
-                explicit CDataStorage(long long sieveSize);
+                explicit CSieveGPU(long long sieveSize);
 
                 /// <summary>
-                /// Clear internal memory
+                /// Destructor
                 /// </summary>
-                void clear(void);
+                ~CSieveGPU(void);
 
                 /// <summary>
-                /// Load prime data from file
+                /// Load sieve data from file
                 /// </summary>
-                /// <param name="filename">Filename containing prime data</param>
-                /// <returns>Prime where to restart</returns>
-                std::tuple<long long, long long> dataLoad(std::string filename);
+                /// <param name="filename">Filename of sieve data</param>
+                void dataLoad(std::string filename);
 
                 /// <summary>
-                /// Save prime data to file
+                /// Write sieve data to file
                 /// </summary>
-                /// <param name="filename">Filename to save data to</param>
-                /// <param name="latestPrime">Latest determined prime</param>
-                /// <param name="sieveSize">Upper border of sieve</param>
-                void dataSave(std::string filename, long long latestPrime, long long sieveSize);
+                /// <param name="filename">Filename of sieve data</param>
+                void dataSave(std::string filename);
 
                 /// <summary>
                 /// Export all primes to file
                 /// </summary>
                 /// <param name="filename">File to save to</param>
-                /// <param name="latestPrime">Latest prime to save</param>
-                void exportPrimes(std::string filename, long long latestPrime);
+                void exportPrimes(std::string filename);
 
                 /// <summary>
-                /// Search for next prime
+                /// Get latest prime of sieve
                 /// </summary>
-                /// <param name="number">Number to number for search of next prime</param>
-                /// <returns>Next prime</returns>
-                long long findNextPrime(long long number);
+                /// <returns>Latest prime of sieve</returns>
+                long long getLatestPrime(void);
 
                 /// <summary>
-                /// Returns a pointer to the internal storage vector
+                /// Get size of sieve
                 /// </summary>
-                /// <returns>Pointer to the internal storage vector</returns>
-                long long* getStoragePointer(void);
+                /// <returns>Size of sieve</returns>
+                long long getSieveSize(void);
 
                 /// <summary>
-                /// Returns the internal size of the storage
+                /// Set internal flag to interrupt sieve process.
                 /// </summary>
-                /// <returns>Internal storage size</returns>
-                long long getStorageSize(void);
+                void interruptSieving(void);
 
                 /// <summary>
-                /// Check if given number is NOT a prime
+                /// Performs the sieve algorithm
                 /// </summary>
-                /// <param name="number">Number to check as prime</param>
-                /// <returns>true if prime, otherwise false</returns>
-                bool isNumberNotPrime(long long number);
+                /// <param name="updatePrime">Function called after new prime determined</param>
+                void sievePrimes(std::function<void(long long)> updatePrime);
 
                 /// <summary>
-                /// Mark number as NOT prime
+                /// Default sieve size for new instances
                 /// </summary>
-                /// <param name="number">Number to mark</param>
-                void markNumberAsNotPrime(long long number);
+                static const long long DEFAULT_SIEVE_SIZE;
 
             private:
                 /// <summary>
-                /// Internal method to map large number to index and position
+                /// Prepare storage for usage in sieve
                 /// </summary>
-                /// <param name="number">Number to map</param>
-                /// <returns>Structure with quote and remainder</returns>
-                lldiv_t getStoragePosition(long long number);
+                void initStorage(void);
 
                 /// <summary>
-                /// Internal static variable to memorize numbers of bits
+                /// Memorize latest prime for saving purposes
                 /// </summary>
-                static const long long m_bitsize;
+                long long m_latestPrime;
 
                 /// <summary>
-                /// Internal storage for primes
+                /// Number of available CPU cores
                 /// </summary>
-                std::vector<long long> m_storage;
+                static const unsigned int m_numberOfCores;
 
                 /// <summary>
-                /// Storagesize - may be different than the sieve size
+                /// Upper border of sieve
                 /// </summary>
-                long long m_storageSize;
+                long long m_sieveSize;
+
+                /// <summary>
+                /// Flag to abort sieve of primes
+                /// </summary>
+                bool m_stop_work;
+
+                /// <summary>
+                /// Internal data storage of sieve
+                /// </summary>
+                CDataStorage m_storage;
             };
         } // namespace sieve
     }     // namespace derpaul
 } // namespace net
 
-#endif // CDATASTORAGE_H
+#endif // CSIEVE_H

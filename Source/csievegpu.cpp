@@ -17,13 +17,17 @@
 // along with Sieve. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
 
-#include "csievecpu.h"
+#include "CSieveGPU.h"
 #include <iostream>
 #include <stdlib.h>
 #include <sstream>
 #include <thread>
 #include <vector>
 #include <windows.h>
+
+// *****************************************************************************
+// *****************************************************************************
+extern void markAsPrimeKernelWrapper(long long storageSize, long long prime, long long* gpuStorage);
 
 // *****************************************************************************
 // *****************************************************************************
@@ -40,12 +44,12 @@ namespace net
             // *****************************************************************************
             // Constants
             // *****************************************************************************
-            const long long CSieveCPU::DEFAULT_SIEVE_SIZE = 10000LL;
-            const unsigned int CSieveCPU::m_numberOfCores = std::thread::hardware_concurrency();
+            const long long CSieveGPU::DEFAULT_SIEVE_SIZE = 10000LL;
+            const unsigned int CSieveGPU::m_numberOfCores = std::thread::hardware_concurrency();
 
             // *****************************************************************************
             // *****************************************************************************
-            CSieveCPU::CSieveCPU(long long sieveSize) : m_sieveSize(sieveSize),
+            CSieveGPU::CSieveGPU(long long sieveSize) : m_sieveSize(sieveSize),
                                                   m_latestPrime(1LL),
                                                   m_stop_work(false),
                                                   m_storage(sieveSize)
@@ -55,13 +59,13 @@ namespace net
 
             // *****************************************************************************
             // *****************************************************************************
-            CSieveCPU::~CSieveCPU(void)
+            CSieveGPU::~CSieveGPU(void)
             {
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieveCPU::dataLoad(std::string filename)
+            void CSieveGPU::dataLoad(std::string filename)
             {
                 auto [latestPrime, sieveSize] = m_storage.dataLoad(filename);
                 m_latestPrime = latestPrime;
@@ -70,113 +74,76 @@ namespace net
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieveCPU::dataSave(std::string filename)
+            void CSieveGPU::dataSave(std::string filename)
             {
                 m_storage.dataSave(filename, m_latestPrime, m_sieveSize);
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieveCPU::exportPrimes(std::string filename)
+            void CSieveGPU::exportPrimes(std::string filename)
             {
                 m_storage.exportPrimes(filename, m_latestPrime);
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            long long CSieveCPU::getLatestPrime(void)
+            long long CSieveGPU::getLatestPrime(void)
             {
                 return m_latestPrime;
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            long long CSieveCPU::getSieveSize(void)
+            long long CSieveGPU::getSieveSize(void)
             {
                 return m_sieveSize;
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieveCPU::interruptSieving(void)
+            void CSieveGPU::interruptSieving(void)
             {
                 m_stop_work = true;
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieveCPU::sievePrimes(std::function<void(long long)> updatePrime)
+            void CSieveGPU::sievePrimes(std::function<void(long long)> updatePrime)
             {
                 m_stop_work = false;
+
+                long long* gpuStorage;
+                size_t storageSize = m_storage.getStorageSize() * sizeof(long long);
+                cudaMalloc((void**)&gpuStorage, storageSize);
+                long long* dataArray = m_storage.getStoragePointer();
+                cudaMemcpy(gpuStorage, dataArray, storageSize, cudaMemcpyHostToDevice);
 
                 while (!m_stop_work && (m_latestPrime < m_sieveSize))
                 {
                     long long primeTemp = m_storage.findNextPrime(m_latestPrime);
                     updatePrime(primeTemp);
-                    markPrimeMultiples(primeTemp);
+                    // markPrimeMultiples(primeTemp);
+                    markAsPrimeKernelWrapper(m_sieveSize, primeTemp, gpuStorage);
                     if (!m_stop_work)
                     {
                         m_latestPrime = primeTemp;
                     }
+                    cudaMemcpy(dataArray, gpuStorage, storageSize, cudaMemcpyDeviceToHost);
                 }
+
+                cudaFree(gpuStorage);
             }
 
             // *****************************************************************************
             // *****************************************************************************
-            void CSieveCPU::initStorage(void)
+            void CSieveGPU::initStorage(void)
             {
                 m_storage.clear();
                 m_storage.markNumberAsNotPrime(0LL);
                 m_storage.markNumberAsNotPrime(1LL);
                 m_latestPrime = 1LL;
             }
-
-            // *****************************************************************************
-            // *****************************************************************************
-            void CSieveCPU::markPrimeMultiples(long long prime)
-            {
-                std::vector<std::future<void> > markThreads;
-                lldiv_t parts = lldiv(m_sieveSize, static_cast<long long>(m_numberOfCores));
-
-                for (long long i = 0; i < m_numberOfCores; i++)
-                {
-                    long long lowerBorder = parts.quot * i;
-                    long long upperBorder = parts.quot * (i + 1LL);
-                    if (upperBorder < prime)
-                    {
-                        continue;
-                    }
-                    auto markSegment = std::async(std::launch::async, &CSieveCPU::markPrimeMultiplesSegment, this, lowerBorder, upperBorder, prime);
-                    markThreads.push_back(std::move(markSegment));
-                }
-                auto markSegment = std::async(std::launch::async, &CSieveCPU::markPrimeMultiplesSegment, this, (parts.quot * m_numberOfCores), m_sieveSize, prime);
-                markThreads.push_back(std::move(markSegment));
-
-                for (auto &currentFuture : markThreads)
-                {
-                    currentFuture.wait();
-                }
-            }
-
-            // *****************************************************************************
-            // *****************************************************************************
-            void CSieveCPU::markPrimeMultiplesSegment(long long segmentStart, long long segmentEnd, long long prime)
-            {
-                lldiv_t parts = lldiv(segmentStart, prime);
-
-                long long startMark = (parts.quot + 1LL) * prime;
-                if (parts.rem == 0LL)
-                {
-                    startMark = parts.quot * prime;
-                }
-
-                startMark = std::max<long long>(startMark, (prime * 2));
-                for (long long primeMultiple = startMark; ((!m_stop_work) && (primeMultiple < segmentEnd)); primeMultiple += prime)
-                {
-                    m_storage.markNumberAsNotPrime(primeMultiple);
-                }
-            }
-
         } // namespace sieve
     }     // namespace derpaul
 } // namespace net

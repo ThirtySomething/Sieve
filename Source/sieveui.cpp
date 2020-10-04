@@ -177,4 +177,6 @@ void SieveUI::initQtElements(void)
     ui->lblSieveSizeNumber->setText(QString::number(m_sieve->getSieveSize()));
 
     m_statusBar = SieveUI::statusBar();
+
+    m_statusBar->setSizeGripEnabled(false);
 }

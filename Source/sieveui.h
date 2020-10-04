@@ -21,6 +21,7 @@
 #define SIEVEUI_H
 
 #include "csievecpu.h"
+#include "csievegpu.h"
 #include <QLabel>
 #include <QMainWindow>
 #include <QStatusBar>

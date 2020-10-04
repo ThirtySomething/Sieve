@@ -45,8 +45,10 @@ namespace net
 
             // *****************************************************************************
             // *****************************************************************************
-            CDataStorage::CDataStorage(void)
+            CDataStorage::CDataStorage(long long sieveSize)
             {
+                lldiv_t tmpSize = getStoragePosition(sieveSize);
+                m_storageSize = tmpSize.quot + 1LL;
                 clear();
             }
 
@@ -54,7 +56,7 @@ namespace net
             // *****************************************************************************
             void CDataStorage::clear(void)
             {
-                m_storage.clear();
+                m_storage = std::vector(m_storageSize, 0LL);
             }
 
             // *****************************************************************************
@@ -62,13 +64,14 @@ namespace net
             std::tuple<long long, long long> CDataStorage::dataLoad(std::string filename)
             {
                 std::ifstream infile(filename);
+                long long index, sieveElement, latestPrime, sieveSize;
+
                 m_storage.clear();
-                long long index, bits, latestPrime, sieveSize;
                 infile >> latestPrime;
                 infile >> sieveSize;
-                while (infile >> index >> bits)
+                while (infile >> index >> sieveElement)
                 {
-                    m_storage[index] = bits;
+                    m_storage[index] = sieveElement;
                 }
                 infile.close();
 
@@ -84,9 +87,10 @@ namespace net
 
                 myfile << latestPrime << std::endl;
                 myfile << sieveSize << std::endl;
-                for (auto [idx, storagePart] : m_storage)
+
+                for (long long index = 0; index < m_storageSize; index++)
                 {
-                    myfile << idx << " " << storagePart << std::endl;
+                    myfile << index << " " << m_storage[index] << std::endl;
                 }
 
                 myfile.close();
@@ -99,7 +103,7 @@ namespace net
                 std::ofstream myfile;
                 myfile.open(filename);
 
-                for (long long currentPrime = 2L; currentPrime < latestPrime; currentPrime++)
+                for (long long currentPrime = 0LL; currentPrime < latestPrime; currentPrime++)
                 {
                     if (!isNumberNotPrime(currentPrime))
                     {
@@ -119,6 +123,20 @@ namespace net
                     startValue++;
                 }
                 return startValue;
+            }
+
+            // *****************************************************************************
+            // *****************************************************************************
+            long long CDataStorage::getStorageSize(void)
+            {
+                return m_storageSize;
+            }
+
+            // *****************************************************************************
+            // *****************************************************************************
+            long long* CDataStorage::getStoragePointer(void)
+            {
+                return m_storage.data();
             }
 
             // *****************************************************************************
