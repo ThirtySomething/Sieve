@@ -22,12 +22,11 @@
 #include <stdlib.h>
 #include <sstream>
 #include <thread>
-#include <vector>
 #include <windows.h>
 
 // *****************************************************************************
 // *****************************************************************************
-extern void markAsPrimeKernelWrapper(long long storageSize, long long prime, long long* gpuStorage);
+extern void markAsPrimeKernelWrapper(thrust::host_vector<char>& vecHost, long long prime);
 
 // *****************************************************************************
 // *****************************************************************************
@@ -113,26 +112,45 @@ namespace net
             {
                 m_stop_work = false;
 
-                long long* gpuStorage;
-                size_t storageSize = m_storage.getStorageSize() * sizeof(long long);
-                cudaMalloc((void**)&gpuStorage, storageSize);
-                long long* dataArray = m_storage.getStoragePointer();
-                cudaMemcpy(gpuStorage, dataArray, storageSize, cudaMemcpyHostToDevice);
+                // https://docs.nvidia.com/cuda/thrust/index.html
 
                 while (!m_stop_work && (m_latestPrime < m_sieveSize))
                 {
                     long long primeTemp = m_storage.findNextPrime(m_latestPrime);
                     updatePrime(primeTemp);
-                    // markPrimeMultiples(primeTemp);
+                    markAsPrimeKernelWrapper(m_storage.m_storage, primeTemp);
+                    if (!m_stop_work)
+                    {
+                        m_latestPrime = primeTemp;
+                    }
+                }
+
+/**
+                char* gpuStorage;
+                size_t storageSize = m_storage.getStorageSize() * sizeof(char);
+                auto rcValueMal = cudaMalloc((void**)&gpuStorage, storageSize);
+                char* dataArray = m_storage.getStoragePointer();
+                dataArray[0] = 'E';
+                auto rcValueCpy = cudaMemcpy(gpuStorage, dataArray, storageSize, cudaMemcpyHostToDevice);
+
+                while (!m_stop_work && (m_latestPrime < m_sieveSize))
+                {
+                    long long primeTemp = m_storage.findNextPrime(m_latestPrime);
+                    updatePrime(primeTemp);
                     markAsPrimeKernelWrapper(m_sieveSize, primeTemp, gpuStorage);
                     if (!m_stop_work)
                     {
                         m_latestPrime = primeTemp;
                     }
-                    cudaMemcpy(dataArray, gpuStorage, storageSize, cudaMemcpyDeviceToHost);
+                    rcValueCpy = cudaMemcpy(dataArray, gpuStorage, storageSize, cudaMemcpyDeviceToHost);
                 }
 
-                cudaFree(gpuStorage);
+                auto rcValueFree = cudaFree(gpuStorage);
+
+                thrust::device_vector<char> gpuStorage(m_storage.getStorageSize(), net::derpaul::sieve::CDataStorage::m_unset);
+                thrust::host_vector<char> cpuStorage = m_storage.getStorageReference();
+                // thrust::copy(cpuStorage.begin(), cpuStorage.end(), gpuStorage.begin());
+**/
             }
 
             // *****************************************************************************

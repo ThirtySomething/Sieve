@@ -23,7 +23,7 @@
 #include <map>
 #include <stdlib.h>
 #include <string>
-#include <vector>
+#include <thrust/host_vector.h>
 
 // *****************************************************************************
 // Namespace of Sieve
@@ -90,7 +90,7 @@ namespace net
                 /// Returns a pointer to the internal storage vector
                 /// </summary>
                 /// <returns>Pointer to the internal storage vector</returns>
-                long long* getStoragePointer(void);
+                char* getStoragePointer(void);
 
                 /// <summary>
                 /// Returns the internal size of the storage
@@ -111,24 +111,22 @@ namespace net
                 /// <param name="number">Number to mark</param>
                 void markNumberAsNotPrime(long long number);
 
-            private:
                 /// <summary>
-                /// Internal method to map large number to index and position
+                /// Internal static variable for 'marked as prime'
                 /// </summary>
-                /// <param name="number">Number to map</param>
-                /// <returns>Structure with quote and remainder</returns>
-                lldiv_t getStoragePosition(long long number);
+                static const char m_unset;
 
                 /// <summary>
-                /// Internal static variable to memorize numbers of bits
+                /// Internal static variable for not 'marked as prime'
                 /// </summary>
-                static const long long m_bitsize;
+                static const char m_set;
 
                 /// <summary>
                 /// Internal storage for primes
                 /// </summary>
-                std::vector<long long> m_storage;
+                thrust::host_vector<char> m_storage;
 
+            private:
                 /// <summary>
                 /// Storagesize - may be different than the sieve size
                 /// </summary>

@@ -41,14 +41,14 @@ namespace net
             // *****************************************************************************
             // Constants
             // *****************************************************************************
-            const long long CDataStorage::m_bitsize = 64L;
+            const char CDataStorage::m_set = '\1';
+            const char CDataStorage::m_unset = '\0';
 
             // *****************************************************************************
             // *****************************************************************************
             CDataStorage::CDataStorage(long long sieveSize)
             {
-                lldiv_t tmpSize = getStoragePosition(sieveSize);
-                m_storageSize = tmpSize.quot + 1LL;
+                m_storageSize = sieveSize+1;
                 clear();
             }
 
@@ -56,7 +56,7 @@ namespace net
             // *****************************************************************************
             void CDataStorage::clear(void)
             {
-                m_storage = std::vector(m_storageSize, 0LL);
+                m_storage = std::vector(m_storageSize, m_unset);
             }
 
             // *****************************************************************************
@@ -134,7 +134,7 @@ namespace net
 
             // *****************************************************************************
             // *****************************************************************************
-            long long* CDataStorage::getStoragePointer(void)
+            char* CDataStorage::getStoragePointer(void)
             {
                 return m_storage.data();
             }
@@ -143,9 +143,7 @@ namespace net
             // *****************************************************************************
             bool CDataStorage::isNumberNotPrime(long long number)
             {
-                lldiv_t internalPosition = getStoragePosition(number);
-                long long element = m_storage[internalPosition.quot];
-                bool result = (element >> internalPosition.rem) & 1LL;
+                bool result = (m_storage[number] == m_set);
                 return result;
             }
 
@@ -153,18 +151,7 @@ namespace net
             // *****************************************************************************
             void CDataStorage::markNumberAsNotPrime(long long number)
             {
-                lldiv_t internalPosition = getStoragePosition(number);
-                long long element = m_storage[internalPosition.quot];
-                element |= 1LL << internalPosition.rem;
-                m_storage[internalPosition.quot] = element;
-            }
-
-            // *****************************************************************************
-            // *****************************************************************************
-            lldiv_t CDataStorage::getStoragePosition(long long number)
-            {
-                lldiv_t result = lldiv(number, CDataStorage::m_bitsize);
-                return result;
+                m_storage[number] = m_set;
             }
         } // namespace sieve
     }     // namespace derpaul

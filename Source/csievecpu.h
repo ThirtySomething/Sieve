@@ -17,8 +17,8 @@
 // along with Sieve. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
 
-#ifndef CSIEVE_H
-#define CSIEVE_H
+#ifndef CSIEVECPU_H
+#define CSIEVECPU_H
 
 #include "cdatastorage.h"
 #include <future>
@@ -151,4 +151,4 @@ namespace net
     }     // namespace derpaul
 } // namespace net
 
-#endif // CSIEVE_H
+#endif // CSIEVECPU_H

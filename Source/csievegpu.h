@@ -17,8 +17,8 @@
 // along with Sieve. If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
 
-#ifndef CSIEVE_H
-#define CSIEVE_H
+#ifndef CSIEVEGPU_H
+#define CSIEVEGPU_H
 
 #include "cdatastorage.h"
 #include <cuda_runtime_api.h>
@@ -139,4 +139,4 @@ namespace net
     }     // namespace derpaul
 } // namespace net
 
-#endif // CSIEVE_H
+#endif // CSIEVEGPU_H

@@ -19,26 +19,33 @@
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
+#include <thrust/host_vector.h>
+#include <thrust/device_vector.h>
+#include <thrust/copy.h>
+#include <thrust/fill.h>
 
-__global__ void markAsPrimeKernel(long long prime, long long* gpuStorage)
+__global__ void markAsPrimeKernel(thrust::device_ptr<char> vecDevice, long long prime)
 {
     long long elementId = blockIdx.x * blockDim.x + threadIdx.x;
     long long remainder = elementId % prime;
 
     if ((elementId > prime) && (0 == remainder))
     {
-        long long quotientInternal = elementId / 64LL;
-        long long remainderInternal = elementId % 64LL;
-
-        long long element = gpuStorage[quotientInternal];
-        element |= 1LL << remainderInternal;
-        gpuStorage[quotientInternal] = element;
+        vecDevice[elementId] = '\1';
     }
 }
 
-void markAsPrimeKernelWrapper(long long sieveSize, long long prime, long long* gpuStorage)
+void markAsPrimeKernelWrapper(thrust::host_vector<char>& vecHost, long long prime)
 {
-    dim3 dimsieveSize = dim3(sieveSize);
-    markAsPrimeKernel <<<1, dimsieveSize >>> (prime, gpuStorage);
-}
+    dim3 dimSieveSize = dim3(vecHost.size());
 
+    thrust::device_vector<char> vecDevice(vecHost.size(), '\0');
+    thrust::copy(vecHost.begin(), vecHost.end(), vecDevice.begin());
+
+    markAsPrimeKernel<<<1, dimSieveSize>>>(vecDevice.data(), prime);
+
+    auto rcValue = cudaDeviceSynchronize();
+
+    vecHost.clear();
+    thrust::copy(vecDevice.begin(), vecDevice.end(), vecHost.begin());
+}

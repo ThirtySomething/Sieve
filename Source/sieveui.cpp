@@ -33,7 +33,12 @@ SieveUI::SieveUI(QWidget *parent)
     ui->setupUi(this);
     QObject::connect(this, &SieveUI::primeChanged, this, &SieveUI::setPrime);
 
+#ifdef USE_GPU
+    m_sieve = std::make_unique<net::derpaul::sieve::CSieveGPU>(net::derpaul::sieve::CSieveGPU::DEFAULT_SIEVE_SIZE);
+#else
     m_sieve = std::make_unique<net::derpaul::sieve::CSieveCPU>(net::derpaul::sieve::CSieveCPU::DEFAULT_SIEVE_SIZE);
+#endif
+
     m_processSieve = std::future<void>();
 
     initQtElements();
@@ -96,7 +101,11 @@ void SieveUI::on_actionNew_triggered()
     bool ok;
     long long newSieveSize = QInputDialog::getInt(this, tr("Please enter sieve size"),
                                                   tr("Sieve size:"),
+#ifdef USE_GPU
+                                                  net::derpaul::sieve::CSieveGPU::DEFAULT_SIEVE_SIZE,
+#else
                                                   net::derpaul::sieve::CSieveCPU::DEFAULT_SIEVE_SIZE,
+#endif
                                                   LONG_MIN,
                                                   LONG_MAX,
                                                   1,
@@ -104,7 +113,11 @@ void SieveUI::on_actionNew_triggered()
 
     if (ok)
     {
+#ifdef USE_GPU
+        m_sieve = std::make_unique<net::derpaul::sieve::CSieveGPU>(newSieveSize);
+#else
         m_sieve = std::make_unique<net::derpaul::sieve::CSieveCPU>(newSieveSize);
+#endif
         ui->lblPrimeNumber->setText(QString::number(m_sieve->getLatestPrime()));
         ui->lblSieveSizeNumber->setText(QString::number(m_sieve->getSieveSize()));
         m_processSieve = std::future<void>();

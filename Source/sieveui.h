@@ -34,6 +34,9 @@ namespace Ui
 }
 QT_END_NAMESPACE
 
+#define USE_GPU
+// #undef USE_GPU
+
 /// <summary>
 /// Class for UI of sieve
 /// </summary>
@@ -121,7 +124,11 @@ private:
     /// <summary>
     /// The sieve algorithm
     /// </summary>
+#ifdef USE_GPU
+    std::unique_ptr<net::derpaul::sieve::CSieveGPU> m_sieve;
+#else
     std::unique_ptr<net::derpaul::sieve::CSieveCPU> m_sieve;
+#endif
 
     /// <summary>
     /// Statusbar of main windows
