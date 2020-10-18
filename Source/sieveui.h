@@ -35,7 +35,7 @@ namespace Ui
 QT_END_NAMESPACE
 
 #define USE_GPU
-// #undef USE_GPU
+#undef USE_GPU
 
 /// <summary>
 /// Class for UI of sieve
