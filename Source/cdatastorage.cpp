@@ -56,7 +56,7 @@ namespace net
             // *****************************************************************************
             void CDataStorage::clear(void)
             {
-                m_storage = std::vector(m_storageSize, m_unset);
+                m_storage = thrust::host_vector<char>(m_storageSize, m_unset);
             }
 
             // *****************************************************************************

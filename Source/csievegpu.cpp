@@ -26,7 +26,7 @@
 
 // *****************************************************************************
 // *****************************************************************************
-extern void markAsPrimeKernelWrapper(thrust::host_vector<char>& vecHost, long long prime);
+extern void markAsPrimeKernelWrapper(thrust::host_vector<char>& vecHost, long long sieveSize, long long prime);
 
 // *****************************************************************************
 // *****************************************************************************
@@ -118,7 +118,7 @@ namespace net
                 {
                     long long primeTemp = m_storage.findNextPrime(m_latestPrime);
                     updatePrime(primeTemp);
-                    markAsPrimeKernelWrapper(m_storage.m_storage, primeTemp);
+                    markAsPrimeKernelWrapper(m_storage.m_storage, m_sieveSize, primeTemp);
                     if (!m_stop_work)
                     {
                         m_latestPrime = primeTemp;

@@ -24,28 +24,30 @@
 #include <thrust/copy.h>
 #include <thrust/fill.h>
 
-__global__ void markAsPrimeKernel(thrust::device_ptr<char> vecDevice, long long prime)
+__global__ void markAsPrimeKernel(char* vecDevice, long long sieveSize, long long prime)
 {
     long long elementId = blockIdx.x * blockDim.x + threadIdx.x;
     long long remainder = elementId % prime;
 
-    if ((elementId > prime) && (0 == remainder))
+    if ((elementId > prime) && (0 == remainder) && (elementId < sieveSize))
     {
         vecDevice[elementId] = '\1';
     }
 }
 
-void markAsPrimeKernelWrapper(thrust::host_vector<char>& vecHost, long long prime)
+void markAsPrimeKernelWrapper(thrust::host_vector<char>& vecHost, long long sieveSize, long long prime)
 {
-    dim3 dimSieveSize = dim3(vecHost.size());
+    dim3 dimBlockCount = dim3(ceil(sieveSize / 1024.));
+    dim3 dimBlockSize = dim3(1024);
 
     thrust::device_vector<char> vecDevice(vecHost.size(), '\0');
     thrust::copy(vecHost.begin(), vecHost.end(), vecDevice.begin());
 
-    markAsPrimeKernel<<<1, dimSieveSize>>>(vecDevice.data(), prime);
+    char* d_ptr = thrust::raw_pointer_cast(vecDevice.data());
+
+    markAsPrimeKernel<<<dimBlockCount, dimBlockSize >>>(d_ptr, sieveSize, prime);
 
     auto rcValue = cudaDeviceSynchronize();
 
-    vecHost.clear();
     thrust::copy(vecDevice.begin(), vecDevice.end(), vecHost.begin());
 }
