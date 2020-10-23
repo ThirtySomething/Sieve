@@ -32,6 +32,7 @@ SieveUI::SieveUI(QWidget *parent)
 {
     ui->setupUi(this);
     QObject::connect(this, &SieveUI::primeChanged, this, &SieveUI::setPrime);
+    QObject::connect(this, &SieveUI::sieveDuration, this, &SieveUI::setDuration);
 
 #ifdef USE_GPU
     m_sieve = std::make_unique<net::derpaul::sieve::CSieveGPU>(net::derpaul::sieve::CSieveGPU::DEFAULT_SIEVE_SIZE);
@@ -155,9 +156,13 @@ void SieveUI::on_btnStart_clicked()
     }
 
     m_processSieve = std::async(std::launch::async, [&]() {
+        auto start = std::chrono::system_clock::now();
         m_sieve->sievePrimes([&](long long currentPrime) {
             emit primeChanged(currentPrime);
         });
+        auto end = std::chrono::system_clock::now();
+        unsigned int diff = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        emit sieveDuration(diff);
     });
     m_statusBar->showMessage("Sieving...");
 }
@@ -180,6 +185,13 @@ void SieveUI::on_btnStop_clicked()
 void SieveUI::setPrime(long long prime)
 {
     ui->lblPrimeNumber->setText(QString::number(prime));
+}
+
+// *****************************************************************************
+// *****************************************************************************
+void SieveUI::setDuration(unsigned int duration)
+{
+    m_statusBar->showMessage("Sieving took " + QString::number(duration) + " ms.");
 }
 
 // *****************************************************************************

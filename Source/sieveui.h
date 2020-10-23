@@ -63,6 +63,12 @@ signals:
     /// <param name="newPrime">New prime</param>
     void primeChanged(long long newPrime);
 
+    /// <summary>
+    /// Signal is triggered after sieving has finished
+    /// </summary>
+    /// <param name="duration">Duration of the sieving process</param>
+    void sieveDuration(unsigned int duration);
+
 private slots:
     /// <summary>
     /// Displays about box
@@ -109,6 +115,12 @@ private slots:
     /// </summary>
     /// <param name="prime"></param>
     void setPrime(long long prime);
+
+    /// <summary>
+    /// Called internally to update the duration of the sieving process
+    /// </summary>
+    /// <param name="duration"></param>
+    void setDuration(unsigned int duration);
 
 private:
     /// <summary>
