@@ -19,35 +19,26 @@
 
 #include <cuda.h>
 #include <cuda_runtime_api.h>
-#include <thrust/host_vector.h>
-#include <thrust/device_vector.h>
-#include <thrust/copy.h>
-#include <thrust/fill.h>
 
 __global__ void markAsPrimeKernel(char* vecDevice, long long sieveSize, long long prime)
 {
-    long long elementId = blockIdx.x * blockDim.x + threadIdx.x;
-    long long remainder = elementId % prime;
+    long long elementId = (blockIdx.x * blockDim.x + threadIdx.x) + 2;
+    long long idx = elementId * prime;
 
-    if ((elementId > prime) && (0 == remainder) && (elementId < sieveSize))
+    if ((idx < sieveSize))
     {
-        vecDevice[elementId] = '\1';
+        vecDevice[idx] = '\1';
     }
 }
 
-void markAsPrimeKernelWrapper(thrust::host_vector<char>& vecHost, long long sieveSize, long long prime)
+void markAsPrimeKernelWrapper(char* vecDevice, long long sieveSize, long long prime)
 {
-    dim3 dimBlockCount = dim3(ceil(sieveSize / 1024.));
+    dim3 dimBlockCount = dim3(ceil((sieveSize / (double)prime) / 1024.));
     dim3 dimBlockSize = dim3(1024);
 
-    thrust::device_vector<char> vecDevice(vecHost.size(), '\0');
-    thrust::copy(vecHost.begin(), vecHost.end(), vecDevice.begin());
+    markAsPrimeKernel<<<dimBlockCount, dimBlockSize >>>(vecDevice, sieveSize, prime);
 
-    char* d_ptr = thrust::raw_pointer_cast(vecDevice.data());
-
-    markAsPrimeKernel<<<dimBlockCount, dimBlockSize >>>(d_ptr, sieveSize, prime);
-
-    auto rcValue = cudaDeviceSynchronize();
-
-    thrust::copy(vecDevice.begin(), vecDevice.end(), vecHost.begin());
+    //auto rcValue = cudaDeviceSynchronize();
 }
+
+//long long primeTemp = findNextPrimeKernelWrapper(d_ptr, m_sieveSize, m_latestPrime);

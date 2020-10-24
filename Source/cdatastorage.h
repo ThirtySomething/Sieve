@@ -23,7 +23,7 @@
 #include <map>
 #include <stdlib.h>
 #include <string>
-#include <thrust/host_vector.h>
+#include <vector>
 
 // *****************************************************************************
 // Namespace of Sieve
@@ -124,7 +124,7 @@ namespace net
                 /// <summary>
                 /// Internal storage for primes
                 /// </summary>
-                thrust::host_vector<char> m_storage;
+                std::vector<char> m_storage;
 
             private:
                 /// <summary>
