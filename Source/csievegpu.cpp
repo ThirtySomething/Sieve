@@ -26,7 +26,7 @@
 
 // *****************************************************************************
 // *****************************************************************************
-extern void markAsPrimeKernelWrapper(thrust::host_vector<char>& vecHost, long long sieveSize, long long prime);
+extern void markAsPrimeKernelWrapper(char* vecDevice, long long sieveSize, long long prime);
 
 // *****************************************************************************
 // *****************************************************************************
@@ -114,16 +114,30 @@ namespace net
 
                 // https://docs.nvidia.com/cuda/thrust/index.html
 
+                char* d_ptr;
+                char* h_ptr = m_storage.m_storage.data();
+                auto nSize = m_storage.m_storage.size();
+                cudaMalloc((void**)&d_ptr, sizeof(char) * nSize);
+                cudaMemcpy(d_ptr, h_ptr, sizeof(char) * nSize, cudaMemcpyHostToDevice);
+
                 while (!m_stop_work && (m_latestPrime < m_sieveSize))
                 {
                     long long primeTemp = m_storage.findNextPrime(m_latestPrime);
                     updatePrime(primeTemp);
-                    markAsPrimeKernelWrapper(m_storage.m_storage, m_sieveSize, primeTemp);
+                    markAsPrimeKernelWrapper(d_ptr, m_sieveSize, primeTemp);
                     if (!m_stop_work)
                     {
                         m_latestPrime = primeTemp;
                     }
+
+                    // only copy at most the next 1600 entries from the current prime,
+                    // for numbers up to 1e18 the gap between primes is never bigger than 1600, so this 
+                    // is sufficient for finding the next prime if it is smaller than 1e18
+                    // https://en.wikipedia.org/wiki/Prime_gap / https://en.wikipedia.org/wiki/File:Wikipedia_primegaps.png
+                    cudaMemcpy(h_ptr + m_latestPrime, d_ptr + m_latestPrime, min((sizeof(char) * nSize) - m_latestPrime, 1600), cudaMemcpyDeviceToHost);
                 }
+
+                cudaFree(d_ptr);
 
 /**
                 char* gpuStorage;
