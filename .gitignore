@@ -46,3 +46,4 @@
 /Source/Sieve.vcxproj.filters
 Source/primes.txt
 Source/sieve.dat
+/*.log
